@@ -13,58 +13,57 @@ public class Server implements PrinterInterface {
 		
 	}
 
+	private void Log(String text, Object... args)
+	{
+		System.out.printf(text, args);
+	}
+	
 	@Override
 	public void print(String filename, String printer) {
-		// TODO Auto-generated method stub
-		
+		Log("Printing %s on %s", filename, printer);
 	}
 
 	@Override
-	public void queue() {
-		// TODO Auto-generated method stub
-		
+	public String queue() {
+		Log("Sending print queue");
+		return "QUEUE";
 	}
 
 	@Override
 	public void topQueue(int job) {
-		// TODO Auto-generated method stub
-		
+		Log("Moving %d to top of queue", job);
+
 	}
 
 	@Override
 	public void start() {
-		// TODO Auto-generated method stub
-		
+		Log("Starting server..");
 	}
 
 	@Override
 	public void stop() {
-		// TODO Auto-generated method stub
-		
+		Log("Stopping server..");
 	}
 
 	@Override
 	public void restart() {
-		// TODO Auto-generated method stub
-		
+		Log("Restarting server..");
 	}
 
 	@Override
-	public void status() {
-		// TODO Auto-generated method stub
-		
+	public String status() {
+		Log("Sending status");
+		return "STATUS";
 	}
 
 	@Override
-	public void readConfig(String parameter) {
-		// TODO Auto-generated method stub
-		
+	public String readConfig(String parameter) {
+		Log("Sending config par (%s)", parameter);
+		return "CONFIG";
 	}
 
 	@Override
 	public void setConfig(String parameter, String value) {
-		// TODO Auto-generated method stub
-		
+		Log("Setting config par (%s) to %s", parameter, value);
 	}
-
 }
