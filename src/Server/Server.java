@@ -5,6 +5,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import java.util.PriorityQueue;
 
 import rmi.PrinterInterface;
@@ -76,14 +78,17 @@ public class Server implements PrinterInterface {
 		return "STATUS";
 	}
 
+	HashMap<String, String> config = new HashMap<String, String>();
+	
 	@Override
 	public String readConfig(String parameter) {
 		Log("Sending config par (%s)", parameter);
-		return "CONFIG";
+		return config.getOrDefault(parameter,  "");
 	}
 
 	@Override
 	public void setConfig(String parameter, String value) {
 		Log("Setting config par (%s) to %s", parameter, value);
+		config.put(parameter, value);
 	}
 }
