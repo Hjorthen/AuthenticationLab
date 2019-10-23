@@ -6,7 +6,8 @@ import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
 	
-	public PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();
+	PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();
+	int jobIndex = 1;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -15,14 +16,17 @@ public class Server implements PrinterInterface {
 
 	@Override
 	public void print(String filename, String printer) {
-		// TODO Auto-generated method stub
-		
+		jobQueue.add(new Job(jobIndex, filename, printer));
+		jobIndex++;
 	}
 
 	@Override
-	public void queue() {
-		// TODO Auto-generated method stub
-		
+	public String queue() {
+		String result = "";
+		for (Job job : jobQueue) {
+			result += job.toString() + System.lineSeparator();
+		}
+		return result;
 	}
 
 	@Override
