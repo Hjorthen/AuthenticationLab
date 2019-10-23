@@ -1,15 +1,17 @@
 package Server;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
 	
-	PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();
+	ArrayList<Job> jobQueue = new ArrayList<Job>();
 	int jobIndex = 1;
 
 	public static void main(String[] args) {
@@ -49,7 +51,8 @@ public class Server implements PrinterInterface {
 	@Override
 	public void topQueue(int job) {
 		Log("Moving %d to top of queue", job);
-
+		Job jobObj = jobQueue.remove(job);
+		jobQueue.add(0, jobObj);
 	}
 
 	@Override
