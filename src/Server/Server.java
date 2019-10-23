@@ -1,8 +1,12 @@
 package Server;
 
+import java.util.PriorityQueue;
+
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
+	
+	public PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
