@@ -9,7 +9,7 @@ public interface PrinterInterface extends Remote{
 	void start();   // starts the print server
 	void stop();   // stops the print server
 	void restart();   // stops the print server, clears the print queue and starts the print server again
-	void status();  // prints status of printer on the user's display
-	void readConfig(String parameter);   // prints the value of the parameter on the user's display
+	String status();  // prints status of printer on the user's display
+	String readConfig(String parameter);   // prints the value of the parameter on the user's display
 	void setConfig(String parameter, String value);   // sets the parameter to value
 }
