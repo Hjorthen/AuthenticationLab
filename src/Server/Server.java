@@ -1,5 +1,8 @@
 package Server;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.PriorityQueue;
 
 import rmi.PrinterInterface;
@@ -9,8 +12,15 @@ public class Server implements PrinterInterface {
 	public PriorityQueue<Job> jobQueue = new PriorityQueue<Job>();
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		
+		try {
+			Server server = new Server();
+			PrinterInterface printer = (PrinterInterface)UnicastRemoteObject.exportObject(server, 0);
+			Registry registry  = LocateRegistry.getRegistry();
+			registry.bind("PrinterInterface", printer);
+			System.out.println("Server is ready");	
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	private void Log(String text, Object... args)
