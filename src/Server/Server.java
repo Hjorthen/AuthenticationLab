@@ -1,43 +1,24 @@
 package Server;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
 	
+	public static final String CONFIG_PATH = "config.properties";
+	
 	ArrayList<Job> jobQueue = new ArrayList<Job>();
 	int jobIndex = 1;
 	boolean started = false;
 	
-	static Properties config = new Properties();
-	public static final String CONFIG_PATH = "config.properties";
-	public static final String DEFAULT_LOG_PATH = "log.txt";
-	public static final String DEFAULT_PRINT_PATH = "print.txt";
+	static Config config = new Config(CONFIG_PATH);
 
 	public static void main(String[] args) {
-		//Config init
-		File configFile = new File(CONFIG_PATH);
-		if(configFile.exists()) {
-			try {
-				InputStream inStream = new FileInputStream(CONFIG_PATH);
-				config.load(inStream);
-			}
-			catch(IOException e) {
-				e.printStackTrace();
-			}
-		}
 		//RMI init
 		try {
 			Server server = new Server();
@@ -115,16 +96,6 @@ public class Server implements PrinterInterface {
 	public void setConfig(String parameter, String value) {
 		log("Setting config par (%s) to %s", parameter, value);
 		config.setProperty(parameter, value);
-		try {
-			File configFile = new File(CONFIG_PATH);
-			if(configFile.createNewFile()) {
-				log("Created config file: " + configFile.getAbsolutePath());
-			}
-			OutputStream outStream = new FileOutputStream(configFile);
-			config.store(outStream, null);
-		}
-		catch(IOException e) {
-			e.printStackTrace();
-		}
+
 	}
 }
