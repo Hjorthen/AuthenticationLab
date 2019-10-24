@@ -109,7 +109,7 @@ public class Server implements PrinterInterface {
 	@Override
 	public String readConfig(String parameter) {
 		log("Sending config par (%s)", parameter);
-		return config.toString();
+		return parameter + "=" + config.getProperty(parameter);
 	}
 
 	public void setConfig(String parameter, String value) {
