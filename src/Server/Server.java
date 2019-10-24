@@ -11,7 +11,6 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Properties;
 
 import rmi.PrinterInterface;
@@ -23,10 +22,12 @@ public class Server implements PrinterInterface {
 	boolean started = false;
 	
 	static Properties config = new Properties();
-	public static final String CONFIG_PATH = "C:\\Users\\Thomas\\Desktop\\config.properties";
+	public static final String CONFIG_PATH = "config.properties";
+	public static final String DEFAULT_LOG_PATH = "log.txt";
+	public static final String DEFAULT_PRINT_PATH = "print.txt";
 
 	public static void main(String[] args) {
-		//Log init
+		//Config init
 		File configFile = new File(CONFIG_PATH);
 		if(configFile.exists()) {
 			try {
@@ -49,21 +50,21 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	private void Log(String text, Object... args)
+	private void log(String text, Object... args)
 	{
 		System.out.printf(text, args);
 	}
 	
 	@Override
 	public void print(String filename, String printer) {
-		Log("Printing %s on %s", filename, printer);
+		log("Printing %s on %s", filename, printer);
 		jobQueue.add(new Job(jobIndex, filename, printer));
 		jobIndex++;
 	}
 
 	@Override
 	public String queue() {
-		Log("Sending print queue");
+		log("Sending print queue");
 		String result = "";
 		for (Job job : jobQueue) {
 			result += job.toString() + System.lineSeparator();
@@ -73,20 +74,20 @@ public class Server implements PrinterInterface {
 
 	@Override
 	public void topQueue(int job) {
-		Log("Moving %d to top of queue", job);
+		log("Moving %d to top of queue", job);
 		Job jobObj = jobQueue.remove(job);
 		jobQueue.add(0, jobObj);
 	}
 
 	@Override
 	public void start() {
-		Log("Starting server..");
+		log("Starting server..");
 		started = true;
 	}
 
 	@Override
 	public void stop() {
-		Log("Stopping server..");
+		log("Stopping server..");
 		started = false;
 		jobQueue.clear();
 		jobIndex = 1;
@@ -94,29 +95,31 @@ public class Server implements PrinterInterface {
 
 	@Override
 	public void restart() {
-		Log("Restarting server..");
+		log("Restarting server..");
 		stop();
 		start();
 	}
 
 	@Override
 	public String status() {
-		Log("Sending status");
+		log("Sending status");
 		return "STATUS";
 	}
 	
 	@Override
 	public String readConfig(String parameter) {
-		Log("Sending config par (%s)", parameter);
+		log("Sending config par (%s)", parameter);
 		return config.toString();
 	}
 
 	public void setConfig(String parameter, String value) {
-		//Log("Setting config par (%s) to %s", parameter, value);
+		log("Setting config par (%s) to %s", parameter, value);
 		config.setProperty(parameter, value);
 		try {
 			File configFile = new File(CONFIG_PATH);
-			configFile.createNewFile();
+			if(configFile.createNewFile()) {
+				log("Created config file: " + configFile.getAbsolutePath());
+			}
 			OutputStream outStream = new FileOutputStream(configFile);
 			config.store(outStream, null);
 		}
