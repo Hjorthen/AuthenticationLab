@@ -1,13 +1,11 @@
 package Server;
 
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import java.util.PriorityQueue;
+import java.util.Properties;
 
 import rmi.PrinterInterface;
 
@@ -15,8 +13,13 @@ public class Server implements PrinterInterface {
 	
 	ArrayList<Job> jobQueue = new ArrayList<Job>();
 	int jobIndex = 1;
+	boolean started = false;
+
 
 	public static void main(String[] args) {
+		//Log init
+		
+		//RMI init
 		try {
 			Server server = new Server();
 			PrinterInterface printer = (PrinterInterface)UnicastRemoteObject.exportObject(server, 0);
@@ -60,16 +63,22 @@ public class Server implements PrinterInterface {
 	@Override
 	public void start() {
 		Log("Starting server..");
+		started = true;
 	}
 
 	@Override
 	public void stop() {
 		Log("Stopping server..");
+		started = false;
+		jobQueue.clear();
+		jobIndex = 1;
 	}
 
 	@Override
 	public void restart() {
 		Log("Restarting server..");
+		stop();
+		start();
 	}
 
 	@Override
