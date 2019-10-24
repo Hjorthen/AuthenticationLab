@@ -1,8 +1,12 @@
 package Server;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -19,16 +23,19 @@ public class Server implements PrinterInterface {
 	boolean started = false;
 	
 	static Properties config = new Properties();
-	public static final String CONFIG_PATH = "";
+	public static final String CONFIG_PATH = "C:\\Users\\Thomas\\Desktop\\config.properties";
 
 	public static void main(String[] args) {
 		//Log init
-		try {
-			InputStream inStream = new FileInputStream(CONFIG_PATH);
-			config.load(inStream);
-		}
-		catch(IOException e) {
-			e.printStackTrace();
+		File configFile = new File(CONFIG_PATH);
+		if(configFile.exists()) {
+			try {
+				InputStream inStream = new FileInputStream(CONFIG_PATH);
+				config.load(inStream);
+			}
+			catch(IOException e) {
+				e.printStackTrace();
+			}
 		}
 		//RMI init
 		try {
@@ -104,9 +111,17 @@ public class Server implements PrinterInterface {
 		return config.toString();
 	}
 
-	@Override
 	public void setConfig(String parameter, String value) {
-		Log("Setting config par (%s) to %s", parameter, value);
-		config.put(parameter, value);
+		//Log("Setting config par (%s) to %s", parameter, value);
+		config.setProperty(parameter, value);
+		try {
+			File configFile = new File(CONFIG_PATH);
+			configFile.createNewFile();
+			OutputStream outStream = new FileOutputStream(configFile);
+			config.store(outStream, null);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
