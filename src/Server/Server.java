@@ -1,5 +1,8 @@
 package Server;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -14,11 +17,19 @@ public class Server implements PrinterInterface {
 	ArrayList<Job> jobQueue = new ArrayList<Job>();
 	int jobIndex = 1;
 	boolean started = false;
-
+	
+	static Properties config = new Properties();
+	public static final String CONFIG_PATH = "";
 
 	public static void main(String[] args) {
 		//Log init
-		
+		try {
+			InputStream inStream = new FileInputStream(CONFIG_PATH);
+			config.load(inStream);
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
 		//RMI init
 		try {
 			Server server = new Server();
@@ -86,13 +97,11 @@ public class Server implements PrinterInterface {
 		Log("Sending status");
 		return "STATUS";
 	}
-
-	HashMap<String, String> config = new HashMap<String, String>();
 	
 	@Override
 	public String readConfig(String parameter) {
 		Log("Sending config par (%s)", parameter);
-		return config.getOrDefault(parameter,  "");
+		return config.toString();
 	}
 
 	@Override
