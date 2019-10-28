@@ -4,8 +4,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+import database.PasswordRepository;
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
@@ -18,7 +20,8 @@ public class Server implements PrinterInterface {
 	
 	static Config config = new Config(CONFIG_PATH);
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+		PasswordRepository passwords = new PasswordRepository();
 		//RMI init
 		try {
 			Server server = new Server();
