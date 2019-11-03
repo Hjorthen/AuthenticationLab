@@ -6,12 +6,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.Properties;
 
 public class Config {
 	
-	public static final String DEFAULT_LOG_PATH = "log.txt";
-	public static final String DEFAULT_PRINT_PATH = "print.txt";
+	public static final Map<String, String> DEFAULT_VALUES = Map.of(
+			"LOG_PATH", "log.txt",
+			"DB_URL", "jdbc:mysql://localhost:3306/",
+			"DB_USERNAME", "root",
+			"DB_PASSWORD", "authlab19"
+			);
 	
 	Properties props = new Properties();
 	File configFile;
@@ -25,8 +30,7 @@ public class Config {
 			}
 			else {
 				configFile.createNewFile();
-				setProperty("LOG_PATH", DEFAULT_LOG_PATH);
-				setProperty("PRINT_PATH", DEFAULT_PRINT_PATH);
+				DEFAULT_VALUES.forEach((k,v)-> setProperty(k,v));
 				//log("Created config file: " + configFile.getAbsolutePath());
 			}
 		} catch (IOException e) {

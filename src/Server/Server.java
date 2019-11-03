@@ -26,7 +26,11 @@ public class Server implements PrinterInterface {
 	static Config config = new Config(CONFIG_PATH);
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		//PasswordRepository passwords = new PasswordRepository();
+		PasswordRepository passwords = new PasswordRepository(
+				config.getProperty("DB_URL"),
+				config.getProperty("DB_USERNAME"),
+				config.getProperty("DB_PASSWORD")
+				);
 		//RMI init
 		try {
 			Server server = new Server();
