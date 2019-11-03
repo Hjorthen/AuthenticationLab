@@ -1,5 +1,11 @@
 package Server;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -7,7 +13,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import database.PasswordRepository;
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
@@ -21,7 +26,7 @@ public class Server implements PrinterInterface {
 	static Config config = new Config(CONFIG_PATH);
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		PasswordRepository passwords = new PasswordRepository();
+		//PasswordRepository passwords = new PasswordRepository();
 		//RMI init
 		try {
 			Server server = new Server();
@@ -37,6 +42,23 @@ public class Server implements PrinterInterface {
 	private void log(String text, Object... args)
 	{
 		System.out.printf(text, args);
+		File logFile = new File(config.getProperty("LOG_PATH"));
+		FileWriter fr = null;
+		try {
+			if(!logFile.exists()) {
+				logFile.createNewFile();
+			}
+			fr = new FileWriter(logFile);
+			fr.append(text + System.lineSeparator());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				fr.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	@Override
@@ -100,5 +122,10 @@ public class Server implements PrinterInterface {
 		log("Setting config par (%s) to %s", parameter, value);
 		config.setProperty(parameter, value);
 
+	}
+
+	@Override
+	public void authenticate(String username, String hashPassword) throws RemoteException {
+		
 	}
 }
