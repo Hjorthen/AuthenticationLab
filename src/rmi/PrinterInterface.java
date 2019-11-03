@@ -2,6 +2,7 @@ package rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.security.SignedObject;
 
 public interface PrinterInterface extends Remote{
 	void print(String filename, String printer) throws RemoteException;   /**Prints file filename on the specified printer*/
@@ -13,5 +14,5 @@ public interface PrinterInterface extends Remote{
 	String status() throws RemoteException;  /**Prints status of printer on the user's display*/
 	String readConfig(String parameter) throws RemoteException;   /**Prints the value of the parameter on the user's display*/
 	void setConfig(String parameter, String value) throws RemoteException;   /**Sets the parameter to value*/
-	void authenticate(String username, String hashedPassword) throws RemoteException; /**Authenticates a user by username and password and returns a login token*/
+	SignedObject authenticate(String username, String hashedPassword) throws RemoteException; /**Authenticates a user by username and password and returns a login token*/
 }

@@ -10,6 +10,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.SignedObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -129,7 +130,7 @@ public class Server implements PrinterInterface {
 	}
 
 	@Override
-	public void authenticate(String username, String hashPassword) throws RemoteException {
-		
+	public SignedObject authenticate(String username, String hashPassword) throws RemoteException {
+		return null;
 	}
 }
