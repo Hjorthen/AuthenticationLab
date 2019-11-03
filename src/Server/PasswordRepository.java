@@ -6,11 +6,9 @@ import java.sql.Connection;
 
 public class PasswordRepository {
 	private Connection connection;
-	public PasswordRepository() throws ClassNotFoundException, SQLException {
-		connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/", "root", "authlab19");
-		
+	public PasswordRepository(String url, String username, String password) throws ClassNotFoundException, SQLException {
+		connection = DriverManager.getConnection(url, username, password);
 	}
-	
-	
+
 	
 }
