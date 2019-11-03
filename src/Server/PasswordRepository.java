@@ -4,8 +4,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.SealedObject;
 import javax.naming.AuthenticationException;
 
+import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 
@@ -26,7 +29,11 @@ public class PasswordRepository {
 			if(call.getResultSet().getBoolean(0)) {
 				//Authenticated
 				AccessToken token = new AccessToken();
-				
+				try {
+					SealedObject so = new SealedObject(token, null);
+				} catch (IllegalBlockSizeException | IOException e) {
+					e.printStackTrace();
+				}
 			}
 			else {
 				throw new AuthenticationException("No user found with that username or password");

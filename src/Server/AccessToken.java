@@ -1,6 +1,8 @@
 package Server;
 
-public class AccessToken {
+import java.io.Serializable;
+
+public class AccessToken implements Serializable{
 	
 	public AccessToken() {
 		
