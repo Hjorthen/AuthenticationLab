@@ -13,12 +13,13 @@ public class Client {
 		String host = (args.length < 1) ? null : args[0];
 		int exitCode = 1;
 		System.out.println("Welcome to the printer, you have the following commands to use:");
+    	System.out.println("print \n queue \n topqueue \n start \n stop \n restart \n setconfig \n readconfig \n status");
 		Scanner scanner = new Scanner(System.in);
 		while(exitCode == 1) {
             String command = scanner.nextLine();
 	        try {
 	            Registry registry = LocateRegistry.getRegistry(host);
-	            PrinterInterface stub;
+	            PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
 	            String param;
 	            
 	            switch(command){
@@ -29,7 +30,6 @@ public class Client {
 	            	String filename = scanner.nextLine();
 	            	System.out.println("Please enter the printer name:");
 	            	String printer = scanner.nextLine();
-	            	stub = (PrinterInterface) registry.lookup("print");
 	            	stub.print(filename, printer);
 	            	System.out.println(filename + " put in the queue of printer " + printer);
 	            	break;
@@ -37,7 +37,6 @@ public class Client {
 	            case "queue":
 	            case "Queue":
 	            case "QUEUE":
-	            	stub = (PrinterInterface) registry.lookup("queue");
 	            	System.out.println(stub.queue());
 	            	break;
 	            
@@ -47,35 +46,30 @@ public class Client {
 	            case "TOPQUEUE":
 	            	System.out.println("Please enter the job id to move to the front:");
 	            	int id = scanner.nextInt();
-	            	stub = (PrinterInterface) registry.lookup("topQueue");
 	            	stub.topQueue(id);
 	            	break;
 	            
 	            case "start":
 	            case "Start":
 	            case "START":
-	            	stub = (PrinterInterface) registry.lookup("start");
 	            	stub.start();
 	            	break;
 	            	
 	            case "stop":
 	            case "Stop":
 	            case "STOP":
-	            	stub = (PrinterInterface) registry.lookup("stop");
 	            	stub.stop();
 	            	break; 
 	            	
 	            case "restart":
 	            case "Restart":
 	            case "RESTART":
-	            	stub = (PrinterInterface) registry.lookup("restart");
 	            	stub.restart();
 	            	break;
 	            	
 	            case "status":
 	            case "Status":
 	            case "STATUS":
-	            	stub = (PrinterInterface) registry.lookup("status");
 	            	System.out.println(stub.status());
 	            	break;
 	            	
@@ -83,7 +77,6 @@ public class Client {
 	            case "readconfig":
 	            case "Readconfig":
 	            case "READCONFIG":
-	            	System.out.println("Please enter the parameter:");
 	            	param = scanner.nextLine();
 	            	stub = (PrinterInterface) registry.lookup("readConfig");
 	            	System.out.println(stub.readConfig(param));
@@ -97,7 +90,6 @@ public class Client {
 	            	param = scanner.nextLine();
 	            	System.out.println("Please enter the new value of the chosen paramter:");
 	            	String value = scanner.nextLine();
-	            	stub = (PrinterInterface) registry.lookup("setConfig");
 	            	stub.setConfig(param, value);
 	            	break;
 	            	
@@ -114,7 +106,8 @@ public class Client {
 	            case "help":
 	            case "Help":
 	            case "HELP":
-	            	System.out.println("Print help");	            	
+	            	System.out.println("You can type in the following commands:");	            	
+	            	System.out.println("print \n queue \n topqueue \n start \n stop \n restart \n setconfig \n readconfig \n status");
 	            	break;
 	            	
 	            default:
@@ -126,6 +119,7 @@ public class Client {
 	            e.printStackTrace();
 	        }
 		}
+		scanner.close();
 
 	}
 
