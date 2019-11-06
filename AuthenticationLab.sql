@@ -5,16 +5,25 @@ CREATE TABLE IF NOT EXISTS Account(
 	ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Username VARCHAR(64) NOT NULL,
 	Password VARCHAR(64) NOT NULL, -- Length of SHA-256 hash
-    	PRIMARY KEY (ID)
+	Salt VARCHAR(32) NOT NULL,
+    PRIMARY KEY (ID)
 );
 
 DELIMITER $$
 CREATE PROCEDURE RegisterAccount
-(IN username VARCHAR(64), IN password VARCHAR(64), OUT id INT)
+(IN username VARCHAR(64), IN password VARCHAR(64), IN salt VARCHAR(32), OUT id INT)
 BEGIN
-	INSERT INTO account (username, Password)
-    VALUES (username, Password);
+	INSERT INTO account (Username, Password, Salt)
+    VALUES (username, password, salt);
     SET id = LAST_INSERT_ID();
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE LookupSalt
+(IN username VARCHAR(64), OUT salt VARCHAR(32))
+BEGIN 
+	select Account.salt into salt from account where account.username = username;
 END$$
 DELIMITER ;
 

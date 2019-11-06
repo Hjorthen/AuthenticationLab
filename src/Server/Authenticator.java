@@ -8,19 +8,26 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.SignedObject;
+import java.security.spec.InvalidKeySpecException;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import javax.naming.AuthenticationException;
+
+import Repository.IPasswordRepository;
 
 public class Authenticator {
 	
 	private KeyPair keys;
 	private Signature signature;
-	private PasswordRepository passwordRepo;
+	private HashProvider hashProvider;
+	private IPasswordRepository passwordRepo;
 	
-	public Authenticator(PasswordRepository passwordRepository) {
+	public Authenticator(IPasswordRepository passwordRepository) throws NoSuchAlgorithmException {
 		passwordRepo = passwordRepository;
 		KeyPairGenerator keyGenerator;
-		
+		hashProvider = new HashProvider();
+				
 		try {
 			keyGenerator = KeyPairGenerator.getInstance("DSA"); //TODO: Decide on algorithm
 			keys = keyGenerator.generateKeyPair();
@@ -39,14 +46,16 @@ public class Authenticator {
 	}
 
 	
-	public SignedObject AuthenticateUser(String username, String hashedPassword) throws AuthenticationException {
-		if(passwordRepo.CheckCredentials(username, hashedPassword)) {
+	public SignedObject AuthenticateUser(String username, String userPassword) throws AuthenticationException, InvalidKeySpecException {
+		byte[] salt = passwordRepo.GetSaltForUser(username);
+		if(passwordRepo.CheckCredentials(username, hashProvider.GetHash(userPassword, salt))) {
 			//Authenticated -> return a signed token
 			//https://wiki.sei.cmu.edu/confluence/display/java/SER02-J.+Sign+then+seal+objects+before+sending+them+outside+a+trust+boundary
 			AccessToken token = new AccessToken();
 			return SignToken(token);
 		}
-		else {
+		else
+		{
 			throw new AuthenticationException("No user found with that username or password");
 		}
 	}

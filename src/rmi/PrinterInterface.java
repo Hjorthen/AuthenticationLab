@@ -16,5 +16,5 @@ public interface PrinterInterface extends Remote{
 	String status(SignedObject accessToken) throws RemoteException, AuthenticationException;  /**Prints status of printer on the user's display*/
 	String readConfig(String parameter, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Prints the value of the parameter on the user's display*/
 	void setConfig(String parameter, String value, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Sets the parameter to value*/
-	SignedObject authenticate(String username, String hashedPassword) throws RemoteException, AuthenticationException; /**Authenticates a user by username and password and returns a login token*/
+	SignedObject authenticate(String username, String hashedPassword) throws RemoteException, Exception; /**Authenticates a user by username and password and returns a login token*/
 }

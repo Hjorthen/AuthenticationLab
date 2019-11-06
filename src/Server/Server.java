@@ -10,7 +10,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
 import java.security.SignedObject;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -30,11 +32,17 @@ public class Server implements PrinterInterface {
 	static Authenticator auth;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		auth = new Authenticator(new PasswordRepository(
-				config.getProperty("DB_URL"),
-				config.getProperty("DB_USERNAME"),
-				config.getProperty("DB_PASSWORD")
-				));
+		try {
+			auth = new Authenticator(new PasswordRepository(
+					config.getProperty("DB_URL"),
+					config.getProperty("DB_USERNAME"),
+					config.getProperty("DB_PASSWORD")
+					));
+		} catch (NoSuchAlgorithmException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			System.err.println("Failed to locate hashing algorithm");
+		}
 		
 		//RMI init
 		try {
@@ -183,7 +191,13 @@ public class Server implements PrinterInterface {
 	}
 
 	@Override
-	public SignedObject authenticate(String username, String hashedPassword) throws AuthenticationException {
-		return auth.AuthenticateUser(username, hashedPassword);
+	public SignedObject authenticate(String username, String hashedPassword) throws Exception {
+		try {
+			return auth.AuthenticateUser(username, hashedPassword);
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new Exception("Server error");
+		}
 	}
 }
