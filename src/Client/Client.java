@@ -1,29 +1,30 @@
 package Client;
 
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SignedObject;
 import java.util.Scanner;
 
 import javax.naming.AuthenticationException;
 
 import rmi.PrinterInterface;
-import Server.Authenticator;
 
 
 public class Client {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		String host = (args.length < 1) ? null : args[0];
 		boolean exitCode = true;
 		boolean loggedIn = false;
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		Scanner scanner = new Scanner(System.in);
 		SignedObject accessToken = null;
-
-		System.out.println("Welcome to the printer, you have the following commands to use:");
-    	printHelp();
+		Registry registry = LocateRegistry.getRegistry(host);
+        PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
     	
 		while(exitCode) {
 			System.out.println("Welcome to the printer, you need to login in order to use it!");
@@ -31,17 +32,17 @@ public class Client {
 			String username = scanner.nextLine();
 			System.out.println("Please enter your password:");
 			String password = md.digest(scanner.nextLine().getBytes()).toString();
-			accessToken = authenticate(username, password);
+			accessToken = stub.authenticate(username, password);
 			if(accessToken != null) {
 				loggedIn = true;
 				System.out.println("You have successfully been logged in!");
 			}
 			while(loggedIn) {
+				System.out.println("Welcome to the printer, you have the following commands to use:");
+		    	printHelp();
+		    	
 	            String[] command = scanner.nextLine().toLowerCase().split(" ");
-		        try {
-		            Registry registry = LocateRegistry.getRegistry(host);
-		            PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
-		            
+		        try {		            
 		            switch(command[0]){
 		            case "print":
 			            stub.print(command[1], command[2], accessToken);
