@@ -5,6 +5,8 @@ import java.rmi.registry.Registry;
 import java.security.SignedObject;
 import java.util.Scanner;
 
+import javax.naming.AuthenticationException;
+
 import rmi.PrinterInterface;
 
 
@@ -81,6 +83,8 @@ public class Client {
 	            	System.out.println("That command does not exits. Please enter the help command to get help.");
 	            	
 	            };
+	        } catch (AuthenticationException e) {
+	        	e.printStackTrace();
 	        } catch (IndexOutOfBoundsException e) {
 	        	System.err.println("One or more arguments missing");
 	        } catch (Exception e) {
