@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.SignedObject;
+import java.util.Date;
 
 import javax.naming.AuthenticationException;
 
@@ -16,9 +17,13 @@ public class Authenticator {
 	private KeyPair keys;
 	private Signature signature;
 	private PasswordRepository passwordRepo;
+	private int tokenExpirationHours;
+	private String serverName;
 	
-	public Authenticator(PasswordRepository passwordRepository) {
+	public Authenticator(PasswordRepository passwordRepository, String serverName, int tokenExpirationHours) {
 		passwordRepo = passwordRepository;
+		this.tokenExpirationHours = tokenExpirationHours;
+		this.serverName = serverName;
 		KeyPairGenerator keyGenerator;
 		
 		try {
@@ -43,7 +48,7 @@ public class Authenticator {
 		if(passwordRepo.CheckCredentials(username, hashedPassword)) {
 			//Authenticated -> return a signed token
 			//https://wiki.sei.cmu.edu/confluence/display/java/SER02-J.+Sign+then+seal+objects+before+sending+them+outside+a+trust+boundary
-			AccessToken token = new AccessToken();
+			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours);
 			return SignToken(token);
 		}
 		else {
@@ -54,10 +59,14 @@ public class Authenticator {
 	public boolean VerifyToken(SignedObject token) {
 		try {
 			if(token.verify(keys.getPublic(), signature)) {
-				//TODO: Check token contents
-				return true;
+				AccessToken accessToken = (AccessToken)token.getObject();
+				long currentTime = new Date().getTime();
+				//Check if token is expired
+				if(currentTime > accessToken.timestamp && currentTime < accessToken.expiration) {
+					return true;
+				}
 			}
-		} catch (InvalidKeyException | SignatureException e) {
+		} catch (InvalidKeyException | SignatureException | ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 		return false;

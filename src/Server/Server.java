@@ -30,11 +30,15 @@ public class Server implements PrinterInterface {
 	static Authenticator auth;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		auth = new Authenticator(new PasswordRepository(
-				config.getProperty("DB_URL"),
-				config.getProperty("DB_USERNAME"),
-				config.getProperty("DB_PASSWORD")
-				));
+		auth = new Authenticator(
+				new PasswordRepository(
+					config.getProperty("DB_URL"),
+					config.getProperty("DB_USERNAME"),
+					config.getProperty("DB_PASSWORD")
+				),
+				config.getProperty("SERVER_NAME"),
+				Integer.parseInt(config.getProperty("TOKEN_EXPIRATION_HOURS"))
+				);
 		
 		//RMI init
 		try {
