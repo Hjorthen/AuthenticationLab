@@ -4,15 +4,17 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.SignedObject;
 
+import javax.naming.AuthenticationException;
+
 public interface PrinterInterface extends Remote{
-	void print(String filename, String printer) throws RemoteException;   /**Prints file filename on the specified printer*/
-	String queue() throws RemoteException;   /**Lists the print queue on the user's display in lines of the form <job number>   <file name>*/
-	void topQueue(int job) throws RemoteException;;   /**Moves job to the top of the queue*/
-	void start() throws RemoteException;   /**Starts the print server*/
-	void stop() throws RemoteException;   /**Stops the print server*/
-	void restart() throws RemoteException;   /**Stops the print server, clears the print queue and starts the print server again*/
-	String status() throws RemoteException;  /**Prints status of printer on the user's display*/
-	String readConfig(String parameter) throws RemoteException;   /**Prints the value of the parameter on the user's display*/
-	void setConfig(String parameter, String value) throws RemoteException;   /**Sets the parameter to value*/
-	SignedObject authenticate(String username, String hashedPassword) throws RemoteException; /**Authenticates a user by username and password and returns a login token*/
+	void print(String filename, String printer, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Prints file filename on the specified printer*/
+	String queue(SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Lists the print queue on the user's display in lines of the form <job number>   <file name>*/
+	void topQueue(int job, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Moves job to the top of the queue*/
+	void start(SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Starts the print server*/
+	void stop(SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Stops the print server*/
+	void restart(SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Stops the print server, clears the print queue and starts the print server again*/
+	String status(SignedObject accessToken) throws RemoteException, AuthenticationException;  /**Prints status of printer on the user's display*/
+	String readConfig(String parameter, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Prints the value of the parameter on the user's display*/
+	void setConfig(String parameter, String value, SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Sets the parameter to value*/
+	SignedObject authenticate(String username, String hashedPassword) throws RemoteException, AuthenticationException; /**Authenticates a user by username and password and returns a login token*/
 }

@@ -2,6 +2,7 @@ package Client;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.security.SignedObject;
 import java.util.Scanner;
 
 import rmi.PrinterInterface;
@@ -13,63 +14,57 @@ public class Client {
 		String host = (args.length < 1) ? null : args[0];
 		int exitCode = 1;
 		Scanner scanner = new Scanner(System.in);
+		SignedObject accessToken = null;
 		System.out.println("Welcome to the printer, you have the following commands to use:");
-    	System.out.println("print \nqueue \ntopqueue \nstart \nstop \nrestart \nsetconfig \nreadconfig \nstatus");
+    	printHelp();
+    	
 		while(exitCode == 1) {
-            String command = scanner.nextLine().toLowerCase();
+            String[] command = scanner.nextLine().toLowerCase().split(" ");
 	        try {
 	            Registry registry = LocateRegistry.getRegistry(host);
 	            PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
-	            String param;
 	            
-	            switch(command){
+	            switch(command[0]){
 	            case "print":
-	            	System.out.println("Please enter the filename:");
-	            	String filename = scanner.nextLine();
-	            	System.out.println("Please enter the printer name:");
-	            	String printer = scanner.nextLine();
-	            	stub.print(filename, printer);
-	            	System.out.println(filename + " put in the queue of printer " + printer);
+		            stub.print(command[1], command[2], accessToken);
+	            	System.out.println(command[1] + " put in the queue of printer " + command[2]);
 	            	break;
 	            	
 	            case "queue":
-	            	System.out.println(stub.queue());
+	            	System.out.println(stub.queue(accessToken));
 	            	break;
 	            
 	            case "topqueue":
-	            	System.out.println("Please enter the job id to move to the front:");
-	            	int id = scanner.nextInt();
-	            	stub.topQueue(id);
+	            	stub.topQueue(Integer.parseInt(command[1]), accessToken);
 	            	break;
 	            
 	            case "start":
-	            	stub.start();
+	            	stub.start(accessToken);
 	            	break;
 	            	
 	            case "stop":
-	            	stub.stop();
+	            	stub.stop(accessToken);
 	            	break; 
 	            	
 	            case "restart":
-	            	stub.restart();
+	            	stub.restart(accessToken);
 	            	break;
 	            	
 	            case "status":
-	            	System.out.println(stub.status());
+	            	System.out.println(stub.status(accessToken));
 	            	break;
 	            	
 	            case "readconfig":
-	            	param = scanner.nextLine();
 	            	stub = (PrinterInterface) registry.lookup("readConfig");
-	            	System.out.println(stub.readConfig(param));
+	            	System.out.println(stub.readConfig(command[1], accessToken));
 	            	break;
 	            	
 	            case "setconfig":
-	            	System.out.println("Please enter the parameter you want to change:");
-	            	param = scanner.nextLine();
-	            	System.out.println("Please enter the new value of the chosen paramter:");
-	            	String value = scanner.nextLine();
-	            	stub.setConfig(param, value);
+	            	stub.setConfig(command[1], command[2], accessToken);
+	            	break;
+	            
+	            case "login":
+	            	accessToken = stub.authenticate(command[1], hashString(command[2]));
 	            	break;
 	            	
 	            case "exit":
@@ -79,21 +74,30 @@ public class Client {
 	            	break;
 	            	
 	            case "help":
-	            	System.out.println("You can type in the following commands:");	            	
-	            	System.out.println("print \n queue \n topqueue \n start \n stop \n restart \n setconfig \n readconfig \n status");
+	            	printHelp();
 	            	break;
 	            	
 	            default:
 	            	System.out.println("That command does not exits. Please enter the help command to get help.");
 	            	
 	            };
+	        } catch (IndexOutOfBoundsException e) {
+	        	System.err.println("One or more arguments missing");
 	        } catch (Exception e) {
 	            System.err.println("Client exception: " + e.toString());
 	            e.printStackTrace();
-	        }
+	        } 
 		}
 		scanner.close();
 
 	}
+	
+	static void printHelp() {
+		System.out.println("You can type in the following commands:");	            	
+    	System.out.println(" login [username] [password]\n print [filename] [printer]\n queue \n topqueue [id]\n start \n stop \n restart \n setconfig [parameter] [value]\n readconfig [parameter]\n status");
+	}
 
+	static String hashString(String input) {
+		return null;
+	}
 }

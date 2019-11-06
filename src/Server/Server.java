@@ -14,6 +14,8 @@ import java.security.SignedObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import javax.naming.AuthenticationException;
+
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
@@ -25,13 +27,15 @@ public class Server implements PrinterInterface {
 	boolean started = false;
 	
 	static Config config = new Config(CONFIG_PATH);
+	static Authenticator auth;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		PasswordRepository passwords = new PasswordRepository(
+		auth = new Authenticator(new PasswordRepository(
 				config.getProperty("DB_URL"),
 				config.getProperty("DB_USERNAME"),
 				config.getProperty("DB_PASSWORD")
-				);
+				));
+		
 		//RMI init
 		try {
 			Server server = new Server();
@@ -67,37 +71,67 @@ public class Server implements PrinterInterface {
 	}
 	
 	@Override
-	public void print(String filename, String printer) {
-		log("Printing %s on %s", filename, printer);
-		jobQueue.add(new Job(jobIndex, filename, printer));
-		jobIndex++;
-	}
-
-	@Override
-	public String queue() {
-		log("Sending print queue");
-		String result = "";
-		for (Job job : jobQueue) {
-			result += job.toString() + System.lineSeparator();
+	public void print(String filename, String printer, SignedObject accessToken) {
+		if(auth.VerifyToken(accessToken)) {
+			log("Printing %s on %s", filename, printer);
+			jobQueue.add(new Job(jobIndex, filename, printer));
+			jobIndex++;
 		}
-		return result;
 	}
 
 	@Override
-	public void topQueue(int job) {
-		log("Moving %d to top of queue", job);
-		Job jobObj = jobQueue.remove(job);
-		jobQueue.add(0, jobObj);
+	public String queue(SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Sending print queue");
+			String result = "";
+			for (Job job : jobQueue) {
+				result += job.toString() + System.lineSeparator();
+			}
+			return result;
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
 	}
 
 	@Override
-	public void start() {
+	public void topQueue(int job, SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Moving %d to top of queue", job);
+			Job jobObj = jobQueue.remove(job);
+			jobQueue.add(0, jobObj);
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
+	}
+
+	@Override
+	public void start(SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			start();
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
+	}
+	
+	private void start() {
 		log("Starting server..");
 		started = true;
 	}
 
 	@Override
-	public void stop() {
+	public void stop(SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			stop();
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
+	}
+	
+	private void stop() {
 		log("Stopping server..");
 		started = false;
 		jobQueue.clear();
@@ -105,32 +139,51 @@ public class Server implements PrinterInterface {
 	}
 
 	@Override
-	public void restart() {
-		log("Restarting server..");
-		stop();
-		start();
+	public void restart(SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Restarting server..");
+			stop();
+			start();
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
 	}
 
 	@Override
-	public String status() {
-		log("Sending status");
-		return "STATUS";
+	public String status(SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Sending status");
+			return "STATUS";
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
 	}
 	
 	@Override
-	public String readConfig(String parameter) {
-		log("Sending config par (%s)", parameter);
-		return parameter + "=" + config.getProperty(parameter);
+	public String readConfig(String parameter, SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Sending config par (%s)", parameter);
+			return parameter + "=" + config.getProperty(parameter);
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
 	}
 
-	public void setConfig(String parameter, String value) {
-		log("Setting config par (%s) to %s", parameter, value);
-		config.setProperty(parameter, value);
-
+	public void setConfig(String parameter, String value, SignedObject accessToken) throws AuthenticationException {
+		if(auth.VerifyToken(accessToken)) {
+			log("Setting config par (%s) to %s", parameter, value);
+			config.setProperty(parameter, value);
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
 	}
 
 	@Override
-	public SignedObject authenticate(String username, String hashPassword) throws RemoteException {
-		return null;
+	public SignedObject authenticate(String username, String hashedPassword) throws AuthenticationException {
+		return auth.AuthenticateUser(username, hashedPassword);
 	}
 }
