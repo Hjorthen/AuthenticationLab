@@ -1,12 +1,8 @@
 package Server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
@@ -74,7 +70,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 	
-	@Override
 	public void print(String filename, String printer, SignedObject accessToken) {
 		if(auth.VerifyToken(accessToken)) {
 			log("Printing %s on %s", filename, printer);
@@ -83,7 +78,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	@Override
 	public String queue(SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			log("Sending print queue");
@@ -98,7 +92,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	@Override
 	public void topQueue(int job, SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			log("Moving %d to top of queue", job);
@@ -110,7 +103,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	@Override
 	public void start(SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			start();
@@ -125,7 +117,6 @@ public class Server implements PrinterInterface {
 		started = true;
 	}
 
-	@Override
 	public void stop(SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			stop();
@@ -142,7 +133,6 @@ public class Server implements PrinterInterface {
 		jobIndex = 1;
 	}
 
-	@Override
 	public void restart(SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			log("Restarting server..");
@@ -154,7 +144,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	@Override
 	public String status(SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			log("Sending status");
@@ -165,7 +154,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 	
-	@Override
 	public String readConfig(String parameter, SignedObject accessToken) throws AuthenticationException {
 		if(auth.VerifyToken(accessToken)) {
 			log("Sending config par (%s)", parameter);
@@ -186,7 +174,6 @@ public class Server implements PrinterInterface {
 		}
 	}
 
-	@Override
 	public SignedObject authenticate(String username, String hashedPassword) throws AuthenticationException {
 		return auth.AuthenticateUser(username, hashedPassword);
 	}
