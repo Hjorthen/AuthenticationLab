@@ -7,30 +7,29 @@ import java.util.Map;
 public class PasswordMockRepository implements IPasswordRepository {
 
 	private Map<String, String> data;
-	private final String salt = "MockSalt";
+	private Map<String, byte[]> salts;
 	
 	public PasswordMockRepository(){
 		data = new HashMap<String, String>();
-		data.put("Test1", "pwd");
-		
-		
-		for(Map.Entry<String, String> entry : data.entrySet())
-		{
-			entry.setValue(entry.getValue() + salt);
-		}
+		salts = new HashMap<String, byte[]>();
+	}
+	
+	public void AddUser(String username, String hashedPassword, byte[] salt)
+	{
+		data.put(username, hashedPassword);
+		salts.put(username, salt);
 	}
 
 	@Override
 	public boolean AuthenticateUser(String username, String hashedPassword) throws SQLException {
 			if(!data.containsKey(username))
 				return false;
-			
-			
-			return data.get(username) == hashedPassword;
+					
+			return data.get(username).equals(hashedPassword);
 	}
 
 	@Override
 	public byte[] GetSaltForUser(String username) throws SQLException {
-		return salt.getBytes();
+		return salts.get(username);
 	}
 }

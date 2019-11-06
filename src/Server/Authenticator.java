@@ -43,7 +43,7 @@ public class Authenticator {
 		}
 		
 		try {
-			signature = Signature.getInstance("SHA1withDSA"); //TODO: Decide on algorithm
+			signature = Signature.getInstance("SHA256withDSA"); //TODO: Decide on algorithm
 			signature.initSign(keys.getPrivate());
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			// TODO Auto-generated catch block
@@ -67,6 +67,8 @@ public class Authenticator {
 	}
 	
 	public boolean VerifyToken(SignedObject token) {
+			if(token == null)
+				return false;
 		try {
 			if(token.verify(keys.getPublic(), signature)) {
 				AccessToken accessToken = (AccessToken)token.getObject();

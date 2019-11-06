@@ -19,9 +19,9 @@ public class HashProvider {
 		base64Encoder = Base64.getEncoder();
 	}
 	
-	String GetHash(String password, byte[] salt) throws InvalidKeySpecException
+	public String GetHash(String password, byte[] salt) throws InvalidKeySpecException
 	{
-		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount);
+		PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, 256);
 		byte[] hash = hashFactory.generateSecret(spec).getEncoded();
 		return new String(base64Encoder.encode(hash));
 	}
