@@ -15,7 +15,7 @@ public class Config {
 			"LOG_PATH", "log.txt",
 			"DB_URL", "jdbc:mysql://localhost:3306/",
 			"DB_USERNAME", "root",
-			"DB_PASSWORD", "authlab19",
+			"DB_PASSWORD", "root",
 			"TOKEN_EXPIRATION_HOURS", "8"
 			);
 	

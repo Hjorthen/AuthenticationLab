@@ -1,6 +1,7 @@
 package Repository;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Base64;
@@ -27,6 +28,7 @@ public class PasswordRepository implements IPasswordRepository {
 	
 	public PasswordRepository(String url, String username, String password) throws ClassNotFoundException, SQLException {
 		connection = DriverManager.getConnection(url, username, password);
+		connection.setCatalog("AuthenticationLab");
 	}
 
 	@Override
@@ -36,7 +38,10 @@ public class PasswordRepository implements IPasswordRepository {
 			call.setString(2, hashedPassword);
 			call.execute();
 			
-			if(call.getResultSet().getBoolean(0)) {
+			ResultSet result = call.getResultSet();
+			boolean first = result.first();
+			
+			if(first && result.getBoolean(1)) {
 				return true;
 			}
 			else {
@@ -46,12 +51,18 @@ public class PasswordRepository implements IPasswordRepository {
 
 	@Override
 	public byte[] GetSaltForUser(String username) throws SQLException {
-			CallableStatement call = connection.prepareCall("{CALL LookupSalt(?, ?)}");
+			CallableStatement call = connection.prepareCall("{CALL LookupSalt(?)}");
 			call.setString(1,  username);
-			call.registerOutParameter(2, Types.VARCHAR);
+			//call.registerOutParameter(2, Types.VARCHAR);
 			call.execute();
 			
-			String salt = call.getString(2);
+			
+			ResultSet result = call.getResultSet();
+			boolean first = result.first();
+			if(!first) {
+				return null;
+			}
+			String salt = result.getString(1);
 			if(salt == null)
 				return null;
 			

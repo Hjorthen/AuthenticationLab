@@ -46,12 +46,12 @@ public class Server implements PrinterInterface {
 	{
 		try {
 			auth = new Authenticator(
-					new PasswordMockRepository()
-					/* new PasswordRepository(
+					//new PasswordMockRepository()
+					new PasswordRepository(
 						config.getProperty("DB_URL"),
 						config.getProperty("DB_USERNAME"),
 						config.getProperty("DB_PASSWORD")
-					)*/,
+					),
 					config.getProperty("SERVER_NAME"),
 					Integer.parseInt(config.getProperty("TOKEN_EXPIRATION_HOURS"))
 					);
@@ -59,6 +59,12 @@ public class Server implements PrinterInterface {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 			System.err.println("Failed to locate hashing algorithm");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 	}
