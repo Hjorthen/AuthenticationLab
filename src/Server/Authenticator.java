@@ -35,7 +35,7 @@ public class Authenticator {
 		hashProvider = new HashProvider();
 				
 		try {
-			keyGenerator = KeyPairGenerator.getInstance("DSA"); //TODO: Decide on algorithm
+			keyGenerator = KeyPairGenerator.getInstance("DSA"); 
 			keys = keyGenerator.generateKeyPair();
 		} catch (NoSuchAlgorithmException e) {
 			// TODO Auto-generated catch block
@@ -43,8 +43,8 @@ public class Authenticator {
 		}
 		
 		try {
-			signature = Signature.getInstance("SHA256withDSA"); //TODO: Decide on algorithm
-			signature.initSign(keys.getPrivate());
+			signature = Signature.getInstance("SHA256withDSA");
+            signature.initSign(keys.getPrivate());
 		} catch (NoSuchAlgorithmException | InvalidKeyException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
