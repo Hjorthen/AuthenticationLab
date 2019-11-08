@@ -1,0 +1,7 @@
+To run the program there are three options.
+1) Execute run.sh which will start the rmiregistry, server and client programs.
+2) Run the programs manually following the RMI Java guide. The two classes are Server.Server and Client.Client
+3) Run the client in headless mode, this will allow the program to run without RMI. For this run Local.LocalRun
+
+
+The program has been developed using Java-11 on Eclipse. 
