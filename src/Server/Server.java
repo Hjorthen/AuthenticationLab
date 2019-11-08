@@ -30,6 +30,20 @@ public class Server implements PrinterInterface {
 	static Authenticator auth;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NumberFormatException, InvalidKeySpecException {
+		
+		//RMI init
+		try {
+			Server server = new Server();
+			PrinterInterface printer = (PrinterInterface)UnicastRemoteObject.exportObject(server, 0);
+			Registry registry  = LocateRegistry.getRegistry();
+			registry.bind("PrinterInterface", printer);
+			System.out.println("Server is ready");	
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+	public Server() throws NumberFormatException, InvalidKeySpecException
+	{
 		try {
 			auth = new Authenticator(
 					new PasswordMockRepository()
@@ -47,18 +61,8 @@ public class Server implements PrinterInterface {
 			System.err.println("Failed to locate hashing algorithm");
 		}
 		
-		//RMI init
-		try {
-			Server server = new Server();
-			PrinterInterface printer = (PrinterInterface)UnicastRemoteObject.exportObject(server, 0);
-			Registry registry  = LocateRegistry.getRegistry();
-			registry.bind("PrinterInterface", printer);
-			System.out.println("Server is ready");	
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
 	}
-
+	
 	private void log(String text, Object... args)
 	{
 		System.out.printf(text, args);

@@ -15,16 +15,14 @@ import rmi.PrinterInterface;
 
 public class Client {
 
-	public static void main(String[] args) throws Exception {
-		String host = (args.length < 1) ? null : args[0];
+	public void Execute(PrinterInterface stub) throws NoSuchAlgorithmException, Exception
+	{
 		boolean exitCode = true;
 		boolean loggedIn = false;
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		Scanner scanner = new Scanner(System.in);
 		SignedObject accessToken = null;
-		Registry registry = LocateRegistry.getRegistry(host);
-        PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
-    	
+		
 		while(exitCode) {
 			System.out.println("Welcome to the printer, you need to login in order to use it!");
 			System.out.println("Please enter your username:");
@@ -73,7 +71,6 @@ public class Client {
 		            	break;
 		            	
 		            case "readconfig":
-		            	stub = (PrinterInterface) registry.lookup("readConfig");
 		            	System.out.println(stub.readConfig(command[1], accessToken));
 		            	break;
 		            	
@@ -112,7 +109,14 @@ public class Client {
 			}
 		}
 		scanner.close();
+
 	}
+	public static void main(String[] args) throws Exception {
+		String host = (args.length < 1) ? null : args[0];
+		Registry registry = LocateRegistry.getRegistry(host);
+        PrinterInterface stub = (PrinterInterface) registry.lookup("PrinterInterface");
+        new Client().Execute(stub);
+    }
 	
 	static void printHelp() {
 		System.out.println("You can type in the following commands:");	            	
