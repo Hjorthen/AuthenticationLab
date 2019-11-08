@@ -7,7 +7,6 @@ import java.security.SignedObject;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 
-import javax.naming.AuthenticationException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class PasswordStorageTests {
 	}
 
 	@Test
-	public void AuthenticateUser_WithCorrectCredentials_GeneratesValidToken() throws AuthenticationException, InvalidKeySpecException, SQLException {
+	public void AuthenticateUser_WithCorrectCredentials_GeneratesValidToken() throws InvalidKeySpecException, SQLException, Server.AuthenticationException {
 		SignedObject obj = authenticator.AuthenticateUser(TestUser, TestPassword);
 		assertNotNull(obj);
 		assertTrue(authenticator.VerifyToken(obj));

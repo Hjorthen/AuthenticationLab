@@ -14,7 +14,6 @@ import java.util.Date;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.naming.AuthenticationException;
 
 import Repository.IPasswordRepository;
 
@@ -54,7 +53,7 @@ public class Authenticator {
 	
 	public SignedObject AuthenticateUser(String username, String userPassword) throws AuthenticationException, InvalidKeySpecException, SQLException {
 		byte[] salt = passwordRepo.GetSaltForUser(username);
-		if(passwordRepo.AuthenticateUser(username, hashProvider.GetHash(userPassword, salt))) {
+		if(salt != null && passwordRepo.AuthenticateUser(username, hashProvider.GetHash(userPassword, salt))) {
 			//Authenticated -> return a signed token
 			//https://wiki.sei.cmu.edu/confluence/display/java/SER02-J.+Sign+then+seal+objects+before+sending+them+outside+a+trust+boundary
 			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours);

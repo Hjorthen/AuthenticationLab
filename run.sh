@@ -1,4 +1,4 @@
-if ! pgrep -x "gedit" > /dev/null
+if ! pgrep -x "rmiregistry" > /dev/null
 then
     cd bin/
     rmiregistry &

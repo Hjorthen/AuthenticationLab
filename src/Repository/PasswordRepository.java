@@ -50,7 +50,10 @@ public class PasswordRepository implements IPasswordRepository {
 			call.setString(1,  username);
 			call.registerOutParameter(2, Types.VARCHAR);
 			call.execute();
+			
 			String salt = call.getString(2);
+			if(salt == null)
+				return null;
 			
 			Decoder base64Decoder = Base64.getDecoder();
 			return base64Decoder.decode(salt);

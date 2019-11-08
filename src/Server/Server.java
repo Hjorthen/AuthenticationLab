@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import Repository.IPasswordRepository;
+import Repository.PasswordMockRepository;
+import Repository.PasswordRepository;
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
@@ -26,14 +28,15 @@ public class Server implements PrinterInterface {
 	static Config config = new Config(CONFIG_PATH);
 	static Authenticator auth;
 
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException, NumberFormatException, InvalidKeySpecException {
 		try {
 			auth = new Authenticator(
-					(IPasswordRepository) new PasswordRepository(
+					new PasswordMockRepository()
+					/* new PasswordRepository(
 						config.getProperty("DB_URL"),
 						config.getProperty("DB_USERNAME"),
 						config.getProperty("DB_PASSWORD")
-					),
+					)*/,
 					config.getProperty("SERVER_NAME"),
 					Integer.parseInt(config.getProperty("TOKEN_EXPIRATION_HOURS"))
 					);
@@ -186,9 +189,12 @@ public class Server implements PrinterInterface {
 		try {
 			return auth.AuthenticateUser(username, hashedPassword);
 		} catch (InvalidKeySpecException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			throw new Exception("Server error");
+		} catch(AuthenticationException e)
+		{
+			log("User" + username + " attempted to login with wrong username or password! \n" + hashedPassword);
+			return null;
 		}
 	}
 }
