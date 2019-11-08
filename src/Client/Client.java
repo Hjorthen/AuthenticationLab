@@ -28,7 +28,7 @@ public class Client {
 			System.out.println("Please enter your username:");
 			String username = scanner.nextLine();
 			System.out.println("Please enter your password:");
-			String password = md.digest(scanner.nextLine().getBytes()).toString();
+			String password = new String(md.digest(scanner.nextLine().getBytes()));
 			accessToken = stub.authenticate(username, password);
 			if(accessToken != null) {
 				loggedIn = true;
