@@ -71,7 +71,7 @@ public class Server implements PrinterInterface {
 	
 	private void log(String text, Object... args)
 	{
-		System.out.printf(text, args);
+		System.out.printf(text + System.lineSeparator(), args);
 		File logFile = new File(config.getProperty("LOG_PATH"));
 		FileWriter fr = null;
 		try {
@@ -92,7 +92,7 @@ public class Server implements PrinterInterface {
 	}
 	
 	public void print(String filename, String printer, SignedObject accessToken) {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Printing %s on %s", filename, printer);
 			jobQueue.add(new Job(jobIndex, filename, printer));
 			jobIndex++;
@@ -100,7 +100,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public String queue(SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Sending print queue");
 			String result = "";
 			for (Job job : jobQueue) {
@@ -114,7 +114,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public void topQueue(int job, SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Moving %d to top of queue", job);
 			Job jobObj = jobQueue.remove(job);
 			jobQueue.add(0, jobObj);
@@ -125,7 +125,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public void start(SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			start();
 		}
 		else {
@@ -139,7 +139,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public void stop(SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			stop();
 		}
 		else {
@@ -155,7 +155,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public void restart(SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Restarting server..");
 			stop();
 			start();
@@ -166,7 +166,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public String status(SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Sending status");
 			return "STATUS";
 		}
@@ -176,7 +176,7 @@ public class Server implements PrinterInterface {
 	}
 	
 	public String readConfig(String parameter, SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Sending config par (%s)", parameter);
 			return parameter + "=" + config.getProperty(parameter);
 		}
@@ -186,7 +186,7 @@ public class Server implements PrinterInterface {
 	}
 
 	public void setConfig(String parameter, String value, SignedObject accessToken) throws AuthenticationException {
-		if(auth.VerifyToken(accessToken)) {
+		if(verifyToken(accessToken)) {
 			log("Setting config par (%s) to %s", parameter, value);
 			config.setProperty(parameter, value);
 		}
@@ -197,15 +197,28 @@ public class Server implements PrinterInterface {
 
 	@Override
 	public SignedObject authenticate(String username, String hashedPassword) throws Exception {
+		log("Authenticating user %s", username);
 		try {
 			return auth.AuthenticateUser(username, hashedPassword);
 		} catch (InvalidKeySpecException e) {
+			log("Authentication failed: Server error");
 			e.printStackTrace();
 			throw new Exception("Server error");
 		} catch(AuthenticationException e)
 		{
-			log("User" + username + " attempted to login with wrong username or password! \n" + hashedPassword);
+			log("Authentication failed: Wrong username/password");
 			return null;
+		}
+	}
+	
+	private boolean verifyToken(SignedObject token) {
+		if(auth.VerifyToken(token)) {
+			log("Token verified");
+			return true;
+		}
+		else {
+			log("Invalid token!");
+			return false;
 		}
 	}
 }

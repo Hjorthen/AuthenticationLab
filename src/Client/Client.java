@@ -19,7 +19,7 @@ public class Client {
 	{
 		boolean exitCode = true;
 		boolean loggedIn = false;
-		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		
 		Scanner scanner = new Scanner(System.in);
 		SignedObject accessToken = null;
 		
@@ -28,7 +28,7 @@ public class Client {
 			System.out.println("Please enter your username:");
 			String username = scanner.nextLine();
 			System.out.println("Please enter your password:");
-			String password = new String(md.digest(scanner.nextLine().getBytes()));
+			String password = hashString(scanner.nextLine());
 			accessToken = stub.authenticate(username, password);
 			if(accessToken != null) {
 				loggedIn = true;
@@ -97,9 +97,6 @@ public class Client {
 		            	System.out.println("That command does not exits. Please enter the help command to get help.");
 		            	
 		            };
-		        } catch (AuthenticationException e) {
-		        	e.printStackTrace();
-		        	loggedIn = false;
 		        } catch (IndexOutOfBoundsException e) {
 		        	System.err.println("One or more arguments missing");
 		        } catch (Exception e) {
@@ -124,6 +121,13 @@ public class Client {
 	}
 
 	static String hashString(String input) {
-		return null;
+		MessageDigest md = null;
+		try {
+			md = MessageDigest.getInstance("SHA-256");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return new String(md.digest(input.getBytes()));
 	}
 }
