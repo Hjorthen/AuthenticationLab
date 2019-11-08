@@ -16,6 +16,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import Repository.IPasswordRepository;
+import rmi.AuthenticationException;
 
 public class Authenticator {
 	

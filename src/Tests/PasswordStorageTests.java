@@ -15,6 +15,7 @@ import org.junit.runners.Parameterized.Parameters;
 import Repository.PasswordMockRepository;
 import Server.Authenticator;
 import Server.HashProvider;
+import rmi.AuthenticationException;
 
 public class PasswordStorageTests {
 	PasswordMockRepository repository;
@@ -37,7 +38,7 @@ public class PasswordStorageTests {
 	}
 
 	@Test
-	public void AuthenticateUser_WithCorrectCredentials_GeneratesValidToken() throws InvalidKeySpecException, SQLException, Server.AuthenticationException {
+	public void AuthenticateUser_WithCorrectCredentials_GeneratesValidToken() throws InvalidKeySpecException, SQLException, rmi.AuthenticationException {
 		SignedObject obj = authenticator.AuthenticateUser(TestUser, TestPassword);
 		assertNotNull(obj);
 		assertTrue(authenticator.VerifyToken(obj));

@@ -9,8 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignedObject;
 import java.util.Scanner;
 
-import javax.naming.AuthenticationException;
-
+import rmi.AuthenticationException;
 import rmi.PrinterInterface;
 
 

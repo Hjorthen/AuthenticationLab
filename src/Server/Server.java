@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import Repository.IPasswordRepository;
 import Repository.PasswordMockRepository;
 import Repository.PasswordRepository;
+import rmi.AuthenticationException;
 import rmi.PrinterInterface;
 
 public class Server implements PrinterInterface {
