@@ -6,8 +6,7 @@ import java.security.SignedObject;
 
 public interface PrinterInterface extends Remote{
 	void print(String filename, String printer, SignedObject accessToken) throws RemoteException,rmi.AuthenticationException;   /**Prints file filename on the specified printer*/
-	String queue(SignedObject accessToken) throws RemoteException, rmi.AuthenticationException;   /**Lists the print queue on the user's display in lines of the form <job number>   <file name>
-	 * @throws Server.Server.AuthenticationException */
+	String queue(SignedObject accessToken) throws RemoteException, rmi.AuthenticationException;   /**Lists the print queue on the user's display in lines of the form <job number>   <file name>*/
 	void topQueue(int job, SignedObject accessToken) throws RemoteException, rmi.AuthenticationException;   /**Moves job to the top of the queue*/
 	void start(SignedObject accessToken) throws RemoteException, AuthenticationException;   /**Starts the print server*/
 	void stop(SignedObject accessToken) throws RemoteException, rmi.AuthenticationException;   /**Stops the print server*/

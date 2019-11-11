@@ -14,6 +14,7 @@ public class Config {
 	public static final Map<String, String> DEFAULT_VALUES = Map.of(
 			"LOG_PATH", "log.txt",
 			"DB_URL", "jdbc:mysql://localhost:3306/",
+			"DB_SCHEMA", "AuthenticationLab",
 			"DB_USERNAME", "root",
 			"DB_PASSWORD", "root",
 			"TOKEN_EXPIRATION_HOURS", "8"

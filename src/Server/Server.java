@@ -42,6 +42,7 @@ public class Server implements PrinterInterface {
 			System.err.println(e.getMessage());
 		}
 	}
+	
 	public Server() throws NumberFormatException, InvalidKeySpecException
 	{
 		try {
@@ -66,7 +67,7 @@ public class Server implements PrinterInterface {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		start();
 	}
 	
 	private void log(String text, Object... args)
