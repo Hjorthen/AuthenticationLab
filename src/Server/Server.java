@@ -92,33 +92,76 @@ public class Server implements PrinterInterface {
 		}
 	}
 	
-	public void print(String filename, String printer, SignedObject accessToken) {
+	public void print(String filename, String printer, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Printing %s on %s", filename, printer);
-			jobQueue.add(new Job(jobIndex, filename, printer));
-			jobIndex++;
-		}
-	}
-
-	public String queue(SignedObject accessToken) throws AuthenticationException {
-		if(verifyToken(accessToken)) {
-			log("Sending print queue");
-			String result = "";
-			for (Job job : jobQueue) {
-				result += job.toString() + System.lineSeparator();
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Printing %s on %s", filename, printer);
+					jobQueue.add(new Job(jobIndex, filename, printer));
+					jobIndex++;
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			return result;
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
 		}
 	}
+	
+	public String queue(SignedObject accessToken) throws AuthenticationException {
+		if(verifyToken(accessToken)) {
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Sending print queue");
+					String result = "";
+					for (Job job : jobQueue) {
+						result += job.toString() + System.lineSeparator();
+					}
+					return result;
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else {
+			throw new AuthenticationException("Invalid access token");
+		}
+		return null; //TODO: Return server error
+	}
 
 	public void topQueue(int job, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Moving %d to top of queue", job);
-			Job jobObj = jobQueue.remove(job);
-			jobQueue.add(0, jobObj);
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Moving %d to top of queue", job);
+					Job jobObj = jobQueue.remove(job);
+					jobQueue.add(0, jobObj);
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
@@ -127,7 +170,20 @@ public class Server implements PrinterInterface {
 
 	public void start(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			start();
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					start();
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
@@ -141,7 +197,20 @@ public class Server implements PrinterInterface {
 
 	public void stop(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			stop();
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					stop();
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
@@ -157,9 +226,22 @@ public class Server implements PrinterInterface {
 
 	public void restart(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Restarting server..");
-			stop();
-			start();
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Restarting server..");
+					stop();
+					start();
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
@@ -168,28 +250,69 @@ public class Server implements PrinterInterface {
 
 	public String status(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Sending status");
-			return "STATUS";
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Sending status");
+					return "STATUS";
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
 		}
+		return null; //TODO: Return server error
 	}
 	
 	public String readConfig(String parameter, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Sending config par (%s)", parameter);
-			return parameter + "=" + config.getProperty(parameter);
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Sending config par (%s)", parameter);
+					return parameter + "=" + config.getProperty(parameter);
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");
 		}
+		return null; //TODO: Return server error
 	}
 
 	public void setConfig(String parameter, String value, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
-			log("Setting config par (%s) to %s", parameter, value);
-			config.setProperty(parameter, value);
+			try {
+				if(((AccessToken) accessToken.getObject()).getRole().canPrint()) {
+					log("Setting config par (%s) to %s", parameter, value);
+					config.setProperty(parameter, value);
+				}
+				else {
+					throw new AuthenticationException("Access Denied For This Role");
+				}
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else {
 			throw new AuthenticationException("Invalid access token");

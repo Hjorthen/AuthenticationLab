@@ -56,8 +56,8 @@ public class Authenticator {
 		byte[] salt = passwordRepo.GetSaltForUser(username);
 		if(salt != null && passwordRepo.AuthenticateUser(username, hashProvider.GetHash(userPassword, salt))) {
 			//Authenticated -> return a signed token
-			//https://wiki.sei.cmu.edu/confluence/display/java/SER02-J.+Sign+then+seal+objects+before+sending+them+outside+a+trust+boundary
-			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours);
+			//TODO: Get role from DB
+			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours, new Role("Admin", true, true, true, true, true, true, true, true, true));
 			return SignToken(token);
 		}
 		else
@@ -74,7 +74,7 @@ public class Authenticator {
 				AccessToken accessToken = (AccessToken)token.getObject();
 				long currentTime = new Date().getTime();
 				//Check if token is expired
-				if(currentTime > accessToken.timestamp && currentTime < accessToken.expiration) {
+				if(currentTime > accessToken.getTimestamp() && currentTime < accessToken.getExpiration()) {
 					return true;
 				}
 			}
