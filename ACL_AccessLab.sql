@@ -2,7 +2,7 @@ CREATE DATABASE IF NOT EXISTS AuthenticationLab;
 USE AuthenticationLab;
 
 CREATE TABLE IF NOT EXISTS AccessControlMatrix(
-    UserID INT UNSIGNED NOT NULL,
+    Username VARCHAR(64) NOT NULL,
 	Print BOOLEAN DEFAULT false,
     Queue BOOLEAN DEFAULT false,
     TopQueue BOOLEAN DEFAULT false,
@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS AccessControlMatrix(
     Status BOOLEAN DEFAULT false,
     ReadConfig BOOLEAN DEFAULT false,
     SetConfig BOOLEAN DEFAULT false,
-    FOREIGN KEY (UserID)
-		REFERENCES Account(ID)
+    FOREIGN KEY (Username)
+		REFERENCES Account(username)
 );
 
 CREATE TABLE IF NOT EXISTS Account(
@@ -26,13 +26,31 @@ CREATE TABLE IF NOT EXISTS Account(
 
 DELIMITER $$
 CREATE PROCEDURE RegisterAccount
-(IN username VARCHAR(64), IN password VARCHAR(64), IN salt VARCHAR(32), IN VARCHAR(20), OUT id INT)
+(IN username VARCHAR(64), IN password VARCHAR(64), IN salt VARCHAR(32), IN role VARCHAR(20), OUT id INT)
 BEGIN
 	INSERT INTO account (Username, Password, Salt, Role)
     VALUES (username, password, salt, role);
+    SET id = LAST_INSERT_ID();
     
-	SET id = LAST_INSERT_ID();
+    IF(role = 'Admin') THEN
+		INSERT INTO role (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (username, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+	END IF;
 	
+	IF(role = 'ServiceTechnician') THEN
+		INSERT INTO role (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (username, 0, 0, 0, 1, 1, 1, 1, 1, 1);
+	END IF;
+        
+	IF(role = 'SuperUser') THEN
+		INSERT INTO role (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (username, 1, 1, 1, 0, 0, 1, 0, 0, 0);
+	END IF;
+        
+	IF(role = 'User') THEN
+		INSERT INTO role (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (username, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+	END IF;
 END$$
 DELIMITER ;
 
@@ -67,18 +85,11 @@ BEGIN
 END$$
 DELIMITER ;
 
-INSERT INTO role (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) VALUES 
-('Admin', 1, 1, 1, 1, 1, 1, 1, 1, 1),
-('ServiceTechnician', 0, 0, 0, 1, 1, 1, 1, 1, 1),
-('SuperUser', 1, 1, 1, 0, 0, 1, 0, 0, 0),
-('User', 1, 1, 0, 0, 0, 0, 0, 0, 0)
-;
-
-CALL RegisterAccount('Alice', '','', @result);
-CALL RegisterAccount('Bob', '','', @result);
-CALL RegisterAccount('Cecilia', '','', @result);
-CALL RegisterAccount('Bob', '','', @result);
-CALL RegisterAccount('David', '','', @result);
-CALL RegisterAccount('Erica', '','', @result);
-CALL RegisterAccount('Fred', '','', @result);
-CALL RegisterAccount('George', '','', @result);
+CALL RegisterAccount('Alice', '','','Admin', @result);
+CALL RegisterAccount('Bob', '','','ServiceTechnician', @result);
+CALL RegisterAccount('Cecilia', '','','SuperUser', @result);
+CALL RegisterAccount('Bob', '','','User', @result);
+CALL RegisterAccount('David', '','','User', @result);
+CALL RegisterAccount('Erica', '','','User', @result);
+CALL RegisterAccount('Fred', '','','User', @result);
+CALL RegisterAccount('George', '','','User', @result);
