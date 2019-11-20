@@ -3,7 +3,15 @@ USE AuthenticationLab;
 
 CREATE TABLE IF NOT EXISTS Role(
     Title VARCHAR(20) NOT NULL,
-
+	Print boolean,
+	Queue boolean,
+	TopQueue boolean,
+	Start boolean,
+	Stop boolean,
+	Restart boolean,
+	Status boolean,
+	ReadConfig boolean,
+	SetConfig boolean
     PRIMARY KEY (Title)
 );
 
@@ -15,21 +23,6 @@ CREATE TABLE IF NOT EXISTS Account(
     Role VARCHAR(20) NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (Role)
-		REFERENCES Role(Title)
-);
-
-CREATE TABLE IF NOT EXISTS RBAC(
-	Title VARCHAR(20) NOT NULL,
-	Print boolean,
-	Queue boolean,
-	TopQueue boolean,
-	Start boolean,
-	Stop boolean,
-	Restart boolean,
-	Status boolean,
-	ReadConfig boolean,
-	SetConfig boolean
-	FOREIGN KEY (Title)
 		REFERENCES Role(Title)
 );
 
