@@ -7,15 +7,6 @@ CREATE TABLE IF NOT EXISTS Role(
     PRIMARY KEY (Title)
 );
 
-CREATE TABLE IF NOT EXISTS RoleRelation(
-	UserID INT UNSIGNED NOT NULL,
-    Role VARCHAR(20) NOT NULL,
-	FOREIGN KEY (UserID)
-		REFERENCES Account(ID),
-	FOREIGN KEY (Role)
-		REFERENCES Role(Title)
-);
-
 CREATE TABLE IF NOT EXISTS Account(
 	ID INT UNSIGNED NOT NULL AUTO_INCREMENT,
     Username VARCHAR(64) NOT NULL,
@@ -24,6 +15,45 @@ CREATE TABLE IF NOT EXISTS Account(
     Role VARCHAR(20) NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (Role)
+		REFERENCES Role(Title)
+);
+
+CREATE TABLE IF NOT EXISTS RBAC(
+	Title VARCHAR(20) NOT NULL,
+	Print boolean,
+	Queue boolean,
+	TopQueue boolean,
+	Start boolean,
+	Stop boolean,
+	Restart boolean,
+	Status boolean,
+	ReadConfig boolean,
+	SetConfig boolean
+	FOREIGN KEY (Title)
+		REFERENCES Role(Title)
+);
+
+CREATE TABLE IF NOT EXISTS ACL(
+	UserID INT UNSIGNED NOT NULL,
+    Print boolean,
+    Queue boolean,
+    TopQueue boolean,
+    Start boolean,
+    Stop boolean,
+    Restart boolean,
+    Status boolean,
+    ReadConfig boolean,
+    SetConfig boolean,
+    FOREIGN KEY (UserID)
+		REFERENCES Account(ID)
+);
+
+CREATE TABLE IF NOT EXISTS RoleRelation(
+	UserID INT UNSIGNED NOT NULL,
+    Role VARCHAR(20) NOT NULL,
+	FOREIGN KEY (UserID)
+		REFERENCES Account(ID),
+	FOREIGN KEY (Role)
 		REFERENCES Role(Title)
 );
 
