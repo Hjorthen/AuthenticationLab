@@ -57,7 +57,7 @@ public class Authenticator {
 		if(salt != null && passwordRepo.AuthenticateUser(username, hashProvider.GetHash(userPassword, salt))) {
 			//Authenticated -> return a signed token
 			//TODO: Get role from DB
-			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours, new Role("Admin", true, true, true, true, true, true, true, true, true));
+			AccessToken token = new AccessToken(serverName, username, tokenExpirationHours);
 			return SignToken(token);
 		}
 		else

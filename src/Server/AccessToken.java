@@ -10,14 +10,12 @@ public class AccessToken implements Serializable{
 	private long expiration;
 	private String issuer;
 	private String holder;
-	private Role role;
 	
-	public AccessToken(String issuer, String holder, long lifeSpan, Role role) {
+	public AccessToken(String issuer, String holder, long lifeSpan) {
 		timestamp = new Date().getTime();
 		expiration = timestamp + Duration.ofHours(lifeSpan).toMillis();
 		this.issuer = issuer;
 		this.holder = holder;
-		this.role = role;
 	}
 
 	public long getTimestamp() {
@@ -34,9 +32,5 @@ public class AccessToken implements Serializable{
 
 	public String getHolder() {
 		return holder;
-	}
-
-	public Role getRole() {
-		return role;
 	}
 }

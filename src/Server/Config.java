@@ -17,7 +17,8 @@ public class Config {
 			"DB_SCHEMA", "AuthenticationLab",
 			"DB_USERNAME", "root",
 			"DB_PASSWORD", "root",
-			"TOKEN_EXPIRATION_HOURS", "8"
+			"TOKEN_EXPIRATION_HOURS", "8",
+			"AUTHORIZATION_METHOD", "RB" //RB - Rolebased, ACL - Access control list
 			);
 	
 	Properties props = new Properties();
