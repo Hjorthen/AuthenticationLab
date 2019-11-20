@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Role(
 	Restart boolean,
 	Status boolean,
 	ReadConfig boolean,
-	SetConfig boolean
+	SetConfig boolean,
     PRIMARY KEY (Title)
 );
 
