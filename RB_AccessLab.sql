@@ -97,3 +97,8 @@ CALL RegisterAccount('David', '','','User', @result);
 CALL RegisterAccount('Erica', '','','User', @result);
 CALL RegisterAccount('Fred', '','','User', @result);
 CALL RegisterAccount('George', '','','User', @result);
+
+INSERT INTO role VALUES ('user', true, true, false, false, false, false, false, false, false);
+INSERT INTO role VALUES ('poweruser', true, true, true, false, false, true, false, false, false);
+INSERT INTO role VALUES ('servicetechnician', false, false, false, true, true, true, true, true, true);
+INSERT INTO role VALUES ('admin', true, true, true, true, true, true, true, true, true);
