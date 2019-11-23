@@ -54,7 +54,7 @@ DELIMITER $$
 CREATE PROCEDURE RegisterAccount
 (IN username VARCHAR(64), IN password VARCHAR(64), IN salt VARCHAR(32), IN role VARCHAR(20), OUT id INT)
 BEGIN
-	INSERT INTO account (Username, Password, Salt, Role)
+	INSERT INTO Account (Username, Password, Salt, Role)
     VALUES (username, password, salt, role);
     SET id = LAST_INSERT_ID();
 END$$
@@ -64,7 +64,7 @@ DELIMITER $$
 CREATE PROCEDURE LookupSalt
 (IN username VARCHAR(64))
 BEGIN 
-	select Account.salt from account where account.username = username;
+	select Account.salt from account where Account.username = username;
 END$$
 DELIMITER ;
 
@@ -75,30 +75,34 @@ CREATE PROCEDURE AuthenticateUser
 BEGIN
 	SELECT EXISTS(
 		SELECT account.id
-		FROM account
-		WHERE account.username = username AND account.password = password
+		FROM Account
+		WHERE Account.username = username AND Account.password = password
     );
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE GetRole
-(IN username VARCHAR(64))
+CREATE OR REPLACE PROCEDURE IsAuthorized
+(IN username VARCHAR(64), IN object VARCHAR(64))
 BEGIN
-	
+    SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
+    PREPARE GetAuthorization FROM @query;
+    EXECUTE GetAuthorization USING username;
+    SELECT @Authorization as authorized;
 END$$
 DELIMITER ;
+
+INSERT INTO Role VALUES ('user', true, true, false, false, false, false, false, false, false);
+INSERT INTO Role VALUES ('poweruser', true, true, true, false, false, true, false, false, false);
+INSERT INTO Role VALUES ('servicetechnician', false, false, false, true, true, true, true, true, true);
+INSERT INTO Role VALUES ('admin', true, true, true, true, true, true, true, true, true);
 
 CALL RegisterAccount('Alice', '','','Admin', @result);
 CALL RegisterAccount('Bob', '','','ServiceTechnician', @result);
 CALL RegisterAccount('Cecilia', '','','SuperUser', @result);
-CALL RegisterAccount('Bob', '','','User', @result);
 CALL RegisterAccount('David', '','','User', @result);
 CALL RegisterAccount('Erica', '','','User', @result);
 CALL RegisterAccount('Fred', '','','User', @result);
 CALL RegisterAccount('George', '','','User', @result);
 
-INSERT INTO role VALUES ('user', true, true, false, false, false, false, false, false, false);
-INSERT INTO role VALUES ('poweruser', true, true, true, false, false, true, false, false, false);
-INSERT INTO role VALUES ('servicetechnician', false, false, false, true, true, true, true, true, true);
-INSERT INTO role VALUES ('admin', true, true, true, true, true, true, true, true, true);
+CREATE OR REPLACE VIEW UserPermissions as select Username, Role.* from Account join Role on Account.Role = Role.Title;
