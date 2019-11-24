@@ -1,0 +1,100 @@
+package Utility;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Base64;
+import java.util.Base64.Encoder;
+import java.util.Scanner;
+
+import Repository.IPolicyRepository;
+import Repository.PasswordRepository;
+import Server.Config;
+import Server.HashProvider;
+
+class RegisterUser {
+	public static final String CONFIG_PATH = "config.properties";
+	private static Connection connection;
+	private static Encoder base64Encoder = Base64.getEncoder();
+	
+	private static Boolean RegisterUser(String username, byte[] salt, String password, String role) throws SQLException, Exception
+	{
+		MessageDigest md = MessageDigest.getInstance("SHA-256");
+		HashProvider hasher = new HashProvider();
+
+		String dbpassword = "admin";
+		String passwordHash = new String(md.digest(dbpassword.getBytes()));
+		System.out.println("Expected client password: " + passwordHash);
+		System.out.println("Password: " + hasher.GetHash(passwordHash, salt) + ", salt: " + new String(base64Encoder.encode(salt)));
+		
+
+		
+		
+		CallableStatement call = connection.prepareCall("{CALL RegisterAccount(?, ?, ?, ?)}");
+		call.setString(1, username);
+		call.setString(2, passwordHash);
+		call.setString(3, new String(base64Encoder.encode(salt)));
+		call.setString(4, role);
+		call.registerOutParameter(5, java.sql.Types.INTEGER);
+		return call.execute();
+	}
+	
+	private static Boolean VerifyRole(String role) throws SQLException
+	{
+		String query = "select COUNT(*) as count from Role where Title = " + role + ";";
+		Statement statement = connection.createStatement();
+		ResultSet result = statement.executeQuery(query);
+		if(result.next())
+		{
+			return result.getBoolean(1);
+		}
+		return false;
+	}
+	public static void main(String[] args) throws Exception {
+		Config config = new Config(CONFIG_PATH);
+		String url = "jdbc\\:mysql\\://localhost\\:3306/";
+		String uname = "admin";
+		String pwd = "authlab19";
+		PasswordRepository passwordRepo = new PasswordRepository(url, uname, pwd);
+		connection = DriverManager.getConnection(url, uname, pwd);
+		connection.setCatalog("AuthenticationLab");
+		Boolean repeat = true;
+		Scanner sc = new Scanner(System.in);
+		byte[] salt = "testSalt".getBytes();
+		while(repeat)
+		{
+			String username, password, role;
+			System.out.println("Enter Username:");
+			username = sc.next();
+			System.out.println("Enter Password:");
+			password = sc.next();
+			boolean validRole;
+			do
+			{
+				System.out.println("Enter Role:");
+				role = sc.next();
+				validRole = VerifyRole(role);
+				if(!validRole)
+					System.out.println("Invalid Role. Try again.");
+			}while(!validRole);
+			
+			if(RegisterUser(username, salt, password, role))
+			{
+				System.out.println("Registration Success");
+			}
+			else
+			{
+				System.out.println("Registration Failed");
+			}
+		}
+		
+	}
+
+}
