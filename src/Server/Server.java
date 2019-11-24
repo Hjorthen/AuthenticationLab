@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import Repository.IPasswordRepository;
 import Repository.PasswordMockRepository;
 import Repository.PasswordRepository;
+import Repository.PolicyRepository;
 import rmi.AuthenticationException;
 import rmi.PrinterInterface;
 
@@ -28,7 +29,7 @@ public class Server implements PrinterInterface {
 	
 	static Config config = new Config(CONFIG_PATH);
 	static Authenticator authenticator;
-	static IAuthorizer authorizer;
+	static IReferenceMonitor referenceMonitor;
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, NumberFormatException, InvalidKeySpecException {
 		
@@ -59,10 +60,13 @@ public class Server implements PrinterInterface {
 					);
 			String method = config.getProperty("AUTHORIZATION_METHOD");
 			if(method == "RB") {
-				authorizer = new RBAuthorizer();
+				referenceMonitor = new RBReferenceMonitor(new PolicyRepository(
+						config.getProperty("DB_URL"),
+						config.getProperty("DB_USERNAME"),
+						config.getProperty("DB_PASSWORD")));
 			}
 			else if(method == "ACL") {
-				authorizer = new ACLAuthorizer();
+				referenceMonitor = new ACLReferenceMonitor();
 			}
 			else {
 				throw new Exception("No authorization method specified");
@@ -106,7 +110,7 @@ public class Server implements PrinterInterface {
 	public void print(String filename, String printer, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 				try {
-					if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+					if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Printing %s on %s", filename, printer);
 						jobQueue.add(new Job(jobIndex, filename, printer));
 						jobIndex++;
@@ -130,7 +134,7 @@ public class Server implements PrinterInterface {
 	public String queue(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Sending print queue");
 						String result = "";
 						for (Job job : jobQueue) {
@@ -158,7 +162,7 @@ public class Server implements PrinterInterface {
 	public void topQueue(int job, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Moving %d to top of queue", job);
 						Job jobObj = jobQueue.remove(job);
 						jobQueue.add(0, jobObj);
@@ -182,7 +186,7 @@ public class Server implements PrinterInterface {
 	public void start(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						start();
 					}
 					else {
@@ -209,7 +213,7 @@ public class Server implements PrinterInterface {
 	public void stop(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						stop();
 					}
 					else {
@@ -238,7 +242,7 @@ public class Server implements PrinterInterface {
 	public void restart(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Restarting server..");
 						stop();
 						start();
@@ -262,7 +266,7 @@ public class Server implements PrinterInterface {
 	public String status(SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Sending status");
 						return "STATUS";
 					}
@@ -286,7 +290,7 @@ public class Server implements PrinterInterface {
 	public String readConfig(String parameter, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Sending config par (%s)", parameter);
 						return parameter + "=" + config.getProperty(parameter);
 					}
@@ -310,7 +314,7 @@ public class Server implements PrinterInterface {
 	public void setConfig(String parameter, String value, SignedObject accessToken) throws AuthenticationException {
 		if(verifyToken(accessToken)) {
 			try {
-				if(authorizer.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
+				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "print")) { //Authorization
 						log("Setting config par (%s) to %s", parameter, value);
 						config.setProperty(parameter, value);
 					}

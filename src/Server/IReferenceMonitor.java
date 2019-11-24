@@ -1,5 +1,5 @@
 package Server;
 
-public interface IAuthorizer {
+public interface IReferenceMonitor {
 	boolean AuthorizeUser(String username, String permission);
 }
