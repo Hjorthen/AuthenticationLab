@@ -120,7 +120,7 @@ public class Client {
     	System.out.println(" login [username] [password]\n print [filename] [printer]\n queue \n topqueue [id]\n start \n stop \n restart \n setconfig [parameter] [value]\n readconfig [parameter]\n status");
 	}
 
-	static String hashString(String input) {
+	public static String hashString(String input) {
 		MessageDigest md = null;
 		try {
 			md = MessageDigest.getInstance("SHA-256");
