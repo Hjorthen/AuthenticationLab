@@ -12,6 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import Repository.ACLPolicyRepository;
 import Repository.IPasswordRepository;
 import Repository.PasswordMockRepository;
 import Repository.PasswordRepository;
@@ -66,7 +67,10 @@ public class Server implements PrinterInterface {
 						config.getProperty("DB_PASSWORD")));
 			}
 			else if(method == "ACL") {
-				referenceMonitor = new ReferenceMonitor();
+				referenceMonitor = new ReferenceMonitor(new ACLPolicyRepository(
+						config.getProperty("DB_URL"),
+						config.getProperty("DB_USERNAME"),
+						config.getProperty("DB_PASSWORD")));
 			}
 			else {
 				throw new Exception("No authorization method specified");
