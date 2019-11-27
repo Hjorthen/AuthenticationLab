@@ -30,8 +30,9 @@ class RegisterUser {
 		HashProvider hasher = new HashProvider();
 
 		String passwordHash = new String(md.digest(password.getBytes()));
+		passwordHash = hasher.GetHash(passwordHash, salt);
 		System.out.println("Expected client password: " + passwordHash);
-		System.out.println("Password: " + hasher.GetHash(passwordHash, salt) + ", salt: " + new String(base64Encoder.encode(salt)));
+		System.out.println("Password: " + passwordHash + ", salt: " + new String(base64Encoder.encode(salt)));
 		
 		CallableStatement call = connection.prepareCall("{CALL RegisterAccount(?, ?, ?, ?, ?)}");
 		call.setString(1, username);
@@ -56,17 +57,17 @@ class RegisterUser {
 	public static void main(String[] args) throws Exception {
 		String url = "jdbc:mysql://localhost:3306/";
 		String uname = "root";
-		String pwd = "root";
+		String pwd = "authlab19";
 		PasswordRepository passwordRepo = new PasswordRepository(url, uname, pwd);
 		connection = DriverManager.getConnection(url, uname, pwd);
 		connection.setCatalog("AuthenticationLab");
 		Boolean repeat = true;
 		Scanner sc = new Scanner(System.in);
-		byte[] salt = "testSalt".getBytes();
+		byte[] salt = "testSalt".getBytes("UTF-8");
 		
 		RegisterUser("Alice", salt, "pswd", "Admin");
 		RegisterUser("Bob", salt, "pswd", "ServiceTechnician");
-		RegisterUser("Cecilia", salt, "pswd", "SuperUser");
+		RegisterUser("Cecilia", salt, "pswd", "poweruser");
 		RegisterUser("David", salt, "pswd", "User");
 		RegisterUser("Erica", salt, "pswd", "User");
 		RegisterUser("Fred", salt, "pswd", "User");
