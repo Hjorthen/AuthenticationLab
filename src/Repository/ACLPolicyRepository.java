@@ -5,6 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+
+import Server.Policy;
 
 public class ACLPolicyRepository implements IPolicyRepository {
 
@@ -14,26 +17,37 @@ public class ACLPolicyRepository implements IPolicyRepository {
 		connection.setCatalog("AuthenticationLab");
 	}
 	@Override
-	public boolean IsSubjectAuthorized(String subject, String resource) {
+	public Policy GetPermissions(String subject) {
 		CallableStatement call;
 		try {
-			call = connection.prepareCall("{CALL IsAuthorized_ACL(?, ?)}");
+			call = connection.prepareCall("{CALL GetUserPermissions(?)}");
 		
 		call.setString(1, subject);
-		call.setString(2, resource);
 		call.execute();
 		
 		ResultSet result = call.getResultSet();
-		boolean first = result.first();
+		final java.sql.ResultSetMetaData meta = call.getMetaData();
 		
-		if(first && result.getBoolean(1)) {
-			return true;
+		boolean first = result.first();
+		HashSet<String> grants = new HashSet<String>();
+		if(first) {
+			// Skip the first two columns as they are not policies
+			for (int i = 3; i <= meta.getColumnCount(); i++) {
+				String grant = (meta.getColumnLabel(i));
+				boolean permission = result.getBoolean(i);
+				if(permission)
+					grants.add(grant);
+			}
+			
+			// Query the subject from the database for those permissions to verify that we are indeed using the right data
+			String targetedSubject = result.getString("Subject");
+			return new Policy(grants, targetedSubject);
 		}
-		return false;
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
+		return null;
 	}
+
 
 }

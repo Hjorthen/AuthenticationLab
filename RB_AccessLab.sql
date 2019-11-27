@@ -90,36 +90,18 @@ DELIMITER ;
 
 
 DELIMITER $$
-CREATE PROCEDURE AuthenticateUser
-(IN username VARCHAR(64), IN password VARCHAR(64))
+CREATE PROCEDURE GetUserPermissions
+(IN username VARCHAR(64))
 BEGIN
-	SELECT EXISTS(
-		SELECT account.id
-		FROM Account
-		WHERE Account.username = username AND Account.password = password
-    );
+	SELECT * FROM UserPermissions where Subject = username;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE PROCEDURE IsAuthorized_RB
-(IN username VARCHAR(64), IN object VARCHAR(64))
+CREATE PROCEDURE GetUserGroupPermissions
+(IN username VARCHAR(64))
 BEGIN
-    SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
-    PREPARE GetAuthorization FROM @query;
-    EXECUTE GetAuthorization USING @username;
-    SELECT @Authorization as authorized;
-END$$
-DELIMITER ;
-
-DELIMITER $$
-CREATE PROCEDURE IsAuthorized_ACL
-(IN username VARCHAR(64), IN object VARCHAR(64))
-BEGIN
-    SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
-    PREPARE GetAuthorization FROM @query;
-    EXECUTE GetAuthorization USING @username;
-    SELECT @Authorization as authorized;
+	SELECT * FROM ACLUserPermissions where Subject = username;
 END$$
 DELIMITER ;
 
@@ -136,5 +118,5 @@ INSERT INTO Role VALUES ('admin', true, true, true, true, true, true, true, true
 #CALL RegisterAccount('Fred', '','','User', @result);
 #CALL RegisterAccount('George', '','','User', @result);
 
-CREATE OR REPLACE VIEW UserPermissions as select Username, Role.* from Account join Role on Account.Role = Role.Title;
-CREATE OR REPLACE VIEW ACLUserPermissions as select Username, ACL.* from Account JOIN ACL ON Account.ID = ACL.UserID;
+CREATE OR REPLACE VIEW UserPermissions as select Username as Subject, Role.* from Account join Role on Account.Role = Role.Title;
+CREATE OR REPLACE VIEW ACLUserPermissions as select Username as Subject, ACL.* from Account JOIN ACL ON Account.ID = ACL.UserID;

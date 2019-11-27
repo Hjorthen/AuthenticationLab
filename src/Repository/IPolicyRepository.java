@@ -1,5 +1,9 @@
 package Repository;
 
+import java.util.HashSet;
+
+import Server.Policy;
+
 public interface IPolicyRepository {
-	boolean IsSubjectAuthorized(String subject, String resource);
+	Policy GetPermissions(String subject);
 }
