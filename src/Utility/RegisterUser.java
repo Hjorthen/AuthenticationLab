@@ -29,8 +29,7 @@ class RegisterUser {
 		MessageDigest md = MessageDigest.getInstance("SHA-256");
 		HashProvider hasher = new HashProvider();
 
-		String dbpassword = "admin";
-		String passwordHash = new String(md.digest(dbpassword.getBytes()));
+		String passwordHash = new String(md.digest(password.getBytes()));
 		System.out.println("Expected client password: " + passwordHash);
 		System.out.println("Password: " + hasher.GetHash(passwordHash, salt) + ", salt: " + new String(base64Encoder.encode(salt)));
 		
