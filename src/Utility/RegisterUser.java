@@ -59,6 +59,7 @@ class RegisterUser {
 	}
 	public static void main(String[] args) throws Exception {
 		Config config = new Config(CONFIG_PATH);
+		//			  jdbc\:mysql\://localhost\:3306/
 		String url = "jdbc\\:mysql\\://localhost\\:3306/";
 		String uname = "admin";
 		String pwd = "authlab19";

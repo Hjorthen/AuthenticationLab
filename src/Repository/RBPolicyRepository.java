@@ -6,10 +6,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PolicyRepository implements IPolicyRepository {
+public class RBPolicyRepository implements IPolicyRepository {
 
 	private Connection connection;
-	public PolicyRepository(String url, String username, String password) throws ClassNotFoundException, SQLException {
+	public RBPolicyRepository(String url, String username, String password) throws ClassNotFoundException, SQLException {
 		connection = DriverManager.getConnection(url, username, password);
 		connection.setCatalog("AuthenticationLab");
 	}
@@ -17,7 +17,7 @@ public class PolicyRepository implements IPolicyRepository {
 	public boolean IsSubjectAuthorized(String subject, String resource) {
 		CallableStatement call;
 		try {
-			call = connection.prepareCall("{CALL IsAuthorized(?, ?)}");
+			call = connection.prepareCall("{CALL IsAuthorized_RB(?, ?)}");
 		
 		call.setString(1, subject);
 		call.setString(2, resource);
