@@ -57,6 +57,26 @@ BEGIN
 	INSERT INTO Account (Username, Password, Salt, Role)
     VALUES (username, password, salt, role);
     SET id = LAST_INSERT_ID();
+	
+	IF(role = 'Admin') THEN
+		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (id, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+	END IF;
+	
+	IF(role = 'ServiceTechnician') THEN
+		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (id, 0, 0, 0, 1, 1, 1, 1, 1, 1);
+	END IF;
+        
+	IF(role = 'SuperUser') THEN
+		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (id, 1, 1, 1, 0, 0, 1, 0, 0, 0);
+	END IF;
+        
+	IF(role = 'User') THEN
+		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+        VALUES (id, 1, 1, 0, 0, 0, 0, 0, 0, 0);
+	END IF;
 END$$
 DELIMITER ;
 
@@ -82,7 +102,18 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE IsAuthorized
+CREATE OR REPLACE PROCEDURE IsAuthorized_RB
+(IN username VARCHAR(64), IN object VARCHAR(64))
+BEGIN
+    SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
+    PREPARE GetAuthorization FROM @query;
+    EXECUTE GetAuthorization USING username;
+    SELECT @Authorization as authorized;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE IsAuthorized_ACL
 (IN username VARCHAR(64), IN object VARCHAR(64))
 BEGIN
     SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
