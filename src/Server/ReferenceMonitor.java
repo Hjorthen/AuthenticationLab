@@ -2,14 +2,15 @@ package Server;
 
 import Repository.IPolicyRepository;
 
-public class RBReferenceMonitor implements IReferenceMonitor {
+public class ReferenceMonitor implements IReferenceMonitor {
 	IPolicyRepository policyStore;
-	public RBReferenceMonitor(IPolicyRepository policyStore) {
+	public ReferenceMonitor(IPolicyRepository policyStore) {
 		this.policyStore = policyStore;
 	}
+	
 	@Override
 	public boolean AuthorizeUser(String username, String permission) {
-		return true;
+		return policyStore.IsSubjectAuthorized(username, permission);
 	}
 
 }

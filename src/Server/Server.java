@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import Repository.IPasswordRepository;
 import Repository.PasswordMockRepository;
 import Repository.PasswordRepository;
-import Repository.PolicyRepository;
+import Repository.RBPolicyRepository;
 import rmi.AuthenticationException;
 import rmi.PrinterInterface;
 
@@ -60,13 +60,13 @@ public class Server implements PrinterInterface {
 					);
 			String method = config.getProperty("AUTHORIZATION_METHOD");
 			if(method == "RB") {
-				referenceMonitor = new RBReferenceMonitor(new PolicyRepository(
+				referenceMonitor = new ReferenceMonitor(new RBPolicyRepository(
 						config.getProperty("DB_URL"),
 						config.getProperty("DB_USERNAME"),
 						config.getProperty("DB_PASSWORD")));
 			}
 			else if(method == "ACL") {
-				referenceMonitor = new ACLReferenceMonitor();
+				referenceMonitor = new ReferenceMonitor();
 			}
 			else {
 				throw new Exception("No authorization method specified");
