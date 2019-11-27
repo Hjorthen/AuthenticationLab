@@ -60,13 +60,13 @@ public class Server implements PrinterInterface {
 					Integer.parseInt(config.getProperty("TOKEN_EXPIRATION_HOURS"))
 					);
 			String method = config.getProperty("AUTHORIZATION_METHOD");
-			if(method == "RB") {
+			if(method.equals("RB")) {
 				referenceMonitor = new ReferenceMonitor(new RBPolicyRepository(
 						config.getProperty("DB_URL"),
 						config.getProperty("DB_USERNAME"),
 						config.getProperty("DB_PASSWORD")));
 			}
-			else if(method == "ACL") {
+			else if(method.equals("ACL")) {
 				referenceMonitor = new ReferenceMonitor(new ACLPolicyRepository(
 						config.getProperty("DB_URL"),
 						config.getProperty("DB_USERNAME"),

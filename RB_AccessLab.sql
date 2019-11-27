@@ -102,23 +102,23 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE IsAuthorized_RB
+CREATE PROCEDURE IsAuthorized_RB
 (IN username VARCHAR(64), IN object VARCHAR(64))
 BEGIN
     SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
     PREPARE GetAuthorization FROM @query;
-    EXECUTE GetAuthorization USING username;
+    EXECUTE GetAuthorization USING @username;
     SELECT @Authorization as authorized;
 END$$
 DELIMITER ;
 
 DELIMITER $$
-CREATE OR REPLACE PROCEDURE IsAuthorized_ACL
+CREATE PROCEDURE IsAuthorized_ACL
 (IN username VARCHAR(64), IN object VARCHAR(64))
 BEGIN
     SET @query = CONCAT('SELECT ', object, ' INTO @Authorization from UserPermissions where Username = ?');
     PREPARE GetAuthorization FROM @query;
-    EXECUTE GetAuthorization USING username;
+    EXECUTE GetAuthorization USING @username;
     SELECT @Authorization as authorized;
 END$$
 DELIMITER ;
@@ -128,12 +128,13 @@ INSERT INTO Role VALUES ('poweruser', true, true, true, false, false, true, fals
 INSERT INTO Role VALUES ('servicetechnician', false, false, false, true, true, true, true, true, true);
 INSERT INTO Role VALUES ('admin', true, true, true, true, true, true, true, true, true);
 
-CALL RegisterAccount('Alice', '','','Admin', @result);
-CALL RegisterAccount('Bob', '','','ServiceTechnician', @result);
-CALL RegisterAccount('Cecilia', '','','SuperUser', @result);
-CALL RegisterAccount('David', '','','User', @result);
-CALL RegisterAccount('Erica', '','','User', @result);
-CALL RegisterAccount('Fred', '','','User', @result);
-CALL RegisterAccount('George', '','','User', @result);
+#CALL RegisterAccount('Alice', '','','Admin', @result);
+#CALL RegisterAccount('Bob', '','','ServiceTechnician', @result);
+#CALL RegisterAccount('Cecilia', '','','SuperUser', @result);
+#CALL RegisterAccount('David', '','','User', @result);
+#CALL RegisterAccount('Erica', '','','User', @result);
+#CALL RegisterAccount('Fred', '','','User', @result);
+#CALL RegisterAccount('George', '','','User', @result);
 
 CREATE OR REPLACE VIEW UserPermissions as select Username, Role.* from Account join Role on Account.Role = Role.Title;
+CREATE OR REPLACE VIEW ACLUserPermissions as select Username, ACL.* from Account JOIN ACL ON Account.ID = ACL.UserID;
