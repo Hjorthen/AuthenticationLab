@@ -26,11 +26,12 @@ public class RBPolicyRepository implements IPolicyRepository {
 		call.execute();
 		
 		ResultSet result = call.getResultSet();
-		final java.sql.ResultSetMetaData meta = call.getMetaData();
 		
 		boolean first = result.first();
 		HashSet<String> grants = new HashSet<String>();
 		if(first) {
+
+			final java.sql.ResultSetMetaData meta = result.getMetaData();
 			// Skip the first two columns as they are not policies
 			for (int i = 3; i <= meta.getColumnCount(); i++) {
 				String grant = (meta.getColumnLabel(i));

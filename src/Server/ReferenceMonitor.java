@@ -11,7 +11,7 @@ public class ReferenceMonitor implements IReferenceMonitor {
 	@Override
 	public boolean AuthorizeUser(String username, String permission) {
 		Policy policy =  policyStore.GetPermissions(username);
-		if(policy.Subject == username && policy.Permissions.contains(permission))
+		if(policy.Subject.equals(username) && policy.Permissions.contains(permission))
 			return true;
 		return false;
 	}

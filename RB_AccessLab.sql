@@ -59,24 +59,37 @@ BEGIN
     SET id = LAST_INSERT_ID();
 	
 	IF(role = 'Admin') THEN
-		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+		INSERT INTO ACL (UserID, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
         VALUES (id, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 	END IF;
 	
 	IF(role = 'ServiceTechnician') THEN
-		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+		INSERT INTO ACL (UserID, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
         VALUES (id, 0, 0, 0, 1, 1, 1, 1, 1, 1);
 	END IF;
         
 	IF(role = 'SuperUser') THEN
-		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+		INSERT INTO ACL (UserID, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
         VALUES (id, 1, 1, 1, 0, 0, 1, 0, 0, 0);
 	END IF;
         
 	IF(role = 'User') THEN
-		INSERT INTO ACL (Title, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
+		INSERT INTO ACL (UserID, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
         VALUES (id, 1, 1, 0, 0, 0, 0, 0, 0, 0);
 	END IF;
+	select last_insert_id() into id;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE PROCEDURE AuthenticateUser
+(IN username VARCHAR(64), IN password VARCHAR(64))
+BEGIN
+       SELECT EXISTS(
+               SELECT *
+               FROM Account
+               WHERE Account.username = username AND Account.password = password
+    );
 END$$
 DELIMITER ;
 
@@ -84,7 +97,7 @@ DELIMITER $$
 CREATE PROCEDURE LookupSalt
 (IN username VARCHAR(64))
 BEGIN 
-	select Account.salt from account where Account.username = username;
+	select Account.salt from Account where Account.username = username;
 END$$
 DELIMITER ;
 
