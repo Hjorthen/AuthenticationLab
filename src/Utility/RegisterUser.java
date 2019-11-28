@@ -57,7 +57,7 @@ class RegisterUser {
 	public static void main(String[] args) throws Exception {
 		String url = "jdbc:mysql://localhost:3306/";
 		String uname = "root";
-		String pwd = "authlab19";
+		String pwd = "root";
 		PasswordRepository passwordRepo = new PasswordRepository(url, uname, pwd);
 		connection = DriverManager.getConnection(url, uname, pwd);
 		connection.setCatalog("AuthenticationLab");

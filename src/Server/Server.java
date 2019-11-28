@@ -120,7 +120,7 @@ public class Server implements PrinterInterface {
 						jobIndex++;
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -147,7 +147,7 @@ public class Server implements PrinterInterface {
 						return result;
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -168,11 +168,11 @@ public class Server implements PrinterInterface {
 			try {
 				if(referenceMonitor.AuthorizeUser(((AccessToken)accessToken.getObject()).getHolder(), "TopQueue")) { //Authorization
 						log("Moving %d to top of queue", job);
-						Job jobObj = jobQueue.remove(job);
+						Job jobObj = jobQueue.remove(job-1);
 						jobQueue.add(0, jobObj);
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -194,7 +194,7 @@ public class Server implements PrinterInterface {
 						start();
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -221,7 +221,7 @@ public class Server implements PrinterInterface {
 						stop();
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -252,7 +252,7 @@ public class Server implements PrinterInterface {
 						start();
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -275,7 +275,7 @@ public class Server implements PrinterInterface {
 						return "STATUS";
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -299,7 +299,7 @@ public class Server implements PrinterInterface {
 						return parameter + "=" + config.getProperty(parameter);
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
@@ -323,7 +323,7 @@ public class Server implements PrinterInterface {
 						config.setProperty(parameter, value);
 					}
 					else {
-						throw new AuthenticationException("Access Denied For This Role");
+						throw new AuthenticationException("User not authorized");
 					}
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

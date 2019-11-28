@@ -98,7 +98,7 @@ public class Client {
 		            	
 		            };
 		        } catch (IndexOutOfBoundsException e) {
-		        	System.err.println("One or more arguments missing");
+		        	e.printStackTrace();
 		        } catch (Exception e) {
 		            System.err.println("Client exception: " + e.toString());
 		            e.printStackTrace();
