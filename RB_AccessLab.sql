@@ -68,7 +68,7 @@ BEGIN
         VALUES (id, 0, 0, 0, 1, 1, 1, 1, 1, 1);
 	END IF;
         
-	IF(role = 'SuperUser') THEN
+	IF(role = 'poweruser') THEN
 		INSERT INTO ACL (UserID, Print, Queue, TopQueue, Start, Stop, Restart, Status, ReadConfig, SetConfig) 
         VALUES (id, 1, 1, 1, 0, 0, 1, 0, 0, 0);
 	END IF;
@@ -106,7 +106,7 @@ DELIMITER $$
 CREATE PROCEDURE GetUserPermissions
 (IN username VARCHAR(64))
 BEGIN
-	SELECT * FROM UserPermissions where Subject = username;
+	SELECT * FROM ACLUserPermissions where Subject = username;
 END$$
 DELIMITER ;
 
@@ -114,7 +114,7 @@ DELIMITER $$
 CREATE PROCEDURE GetUserGroupPermissions
 (IN username VARCHAR(64))
 BEGIN
-	SELECT * FROM ACLUserPermissions where Subject = username;
+	SELECT * FROM UserPermissions where Subject = username;
 END$$
 DELIMITER ;
 
@@ -125,7 +125,7 @@ INSERT INTO Role VALUES ('admin', true, true, true, true, true, true, true, true
 
 #CALL RegisterAccount('Alice', '','','Admin', @result);
 #CALL RegisterAccount('Bob', '','','ServiceTechnician', @result);
-#CALL RegisterAccount('Cecilia', '','','SuperUser', @result);
+#CALL RegisterAccount('Cecilia', '','','poweruser', @result);
 #CALL RegisterAccount('David', '','','User', @result);
 #CALL RegisterAccount('Erica', '','','User', @result);
 #CALL RegisterAccount('Fred', '','','User', @result);
