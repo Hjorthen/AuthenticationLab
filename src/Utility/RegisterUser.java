@@ -65,13 +65,15 @@ class RegisterUser {
 		Scanner sc = new Scanner(System.in);
 		byte[] salt = "testSalt".getBytes("UTF-8");
 		
-		RegisterUser("Alice", salt, "pswd", "Admin");
+		/*RegisterUser("Alice", salt, "pswd", "Admin");
 		RegisterUser("Bob", salt, "pswd", "ServiceTechnician");
 		RegisterUser("Cecilia", salt, "pswd", "poweruser");
 		RegisterUser("David", salt, "pswd", "User");
 		RegisterUser("Erica", salt, "pswd", "User");
 		RegisterUser("Fred", salt, "pswd", "User");
-		RegisterUser("George", salt, "pswd", "User");
+		RegisterUser("George", salt, "pswd", "User");*/
+		RegisterUser("Henry", salt, "pswd", "User");
+		RegisterUser("Ida", salt, "pswd", "poweruser");
 		
 		/*while(repeat)
 		{
